@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faYoutube, faTiktok } from "@fortawesome/free-brands-svg-icons";
 
 class App extends Component {
   constructor(props) {
@@ -139,7 +137,6 @@ class App extends Component {
                     rel="noopener noreferrer"
                     style={{ margin: "0 10px", color: "#fff", fontSize: "24px" }}
                   >
-                    <FontAwesomeIcon icon={faYoutube} />
                   </a>
                   <a
                     href="https://www.tiktok.com/"
@@ -147,7 +144,6 @@ class App extends Component {
                     rel="noopener noreferrer"
                     style={{ margin: "0 10px", color: "#fff", fontSize: "24px" }}
                   >
-                    <FontAwesomeIcon icon={faTiktok} />
                   </a>
                 </div>
                 <div
