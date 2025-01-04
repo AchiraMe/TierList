@@ -32,7 +32,6 @@ class App extends Component {
             <div className="card">
               <div className="card-body">LOGO</div>
             </div>
-            sdsds
           </div>
         </div>
         <div
