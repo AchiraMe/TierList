@@ -28,6 +28,37 @@
   color: #61dafb;
 }
 
+html, body {
+  height: 100%; /* ให้ความสูงเต็มหน้าจอ */
+  margin: 0;    /* เอา margin เริ่มต้นออก */
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%; /* ให้เนื้อหาครอบคลุมความสูงทั้งหมด */
+}
+
+.App {
+  flex: 1; /* เนื้อหาใช้พื้นที่ที่เหลือ */
+}
+
+footer {
+  background-color: #240C31;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  position: relative; /* เปลี่ยนได้ตามแบบ */
+  bottom: 0;
+  width: 100%; /* ครอบคลุมหน้าจอ */
+}
+
+footer.fixed {
+  position: fixed; /* ใช้แบบติดหน้าจอ */
+  bottom: 0;
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

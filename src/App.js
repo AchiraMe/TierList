@@ -1,101 +1,193 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Button from "react-bootstrap/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faYoutube, faTiktok } from "@fortawesome/free-brands-svg-icons";
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      muted: true,
-      delayedMute: true,
-      selectedCard: "",
-    };
+    this.state = {};
   }
-
-
-
 
   render() {
     return (
-      <div className="App">
-        <div
+      <div
+        className="App"
+        style={{
+          backgroundImage: "url('/BG.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
+          minHeight: "100vh", // ให้ครอบคลุมทั้งความสูงของ viewport
+        }}
+      >
+        <nav
+          className="navbar navbar-expand-lg"
           style={{
-            backgroundColor: "#0C0C0C",
+            position: "fixed",
+            top: "0",
+            width: "100%",
+            zIndex: "1000",
+            backgroundColor: "transparent",
+            boxShadow: "none",
+          }}
+        >
+          <div className="container">
+            <a className="navbar-brand" href="#">
+              <img
+                src="/logo.png"
+                alt="NVA Logo"
+                style={{ height: "27px", width: "auto" }}
+              />
+            </a>
+
+            <a
+              className="btn d-lg-none"
+              href="#about-us"
+              style={{
+                backgroundColor: "transparent", // ไม่มีพื้นหลัง
+                border: "1px solid #fff", // เส้นขอบสีขาว
+                color: "#fff", // สีข้อความสีขาว
+                borderRadius: "100px", // ทำให้ปุ่มเป็นวงรี
+                padding: "5px 20px", // ขนาดปุ่ม
+                fontWeight: "bold", // ทำให้ข้อความเด่นขึ้น
+                textDecoration: "none", // ลบเส้นใต้
+              }}
+            >
+              About Us
+            </a>
+
+
+            {/* เมนูแบบเต็มสำหรับหน้าจอใหญ่ */}
+            <div className="collapse navbar-collapse d-none d-lg-block" id="navbarNav">
+              <ul className="navbar-nav ms-auto">
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="#about-us"
+                    style={{
+                      backgroundColor: "transparent", // ไม่มีพื้นหลัง
+                      border: "1px solid #fff", // เส้นขอบสีขาว
+                      color: "#fff", // สีข้อความสีขาว
+                      borderRadius: "100px", // ทำให้ปุ่มเป็นวงรี
+                      padding: "5px 20px", // ขนาดปุ่ม
+                      fontWeight: "bold", // ทำให้ข้อความเด่นขึ้น
+                      textDecoration: "none", // ลบเส้นใต้
+                    }}
+                  >
+                    About Us
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+
+        <header
+          style={{
+            width: "100%",
+            height: "500px", // ปรับขนาดความสูงตามต้องการ
+            // backgroundImage: "url('/headlogo.png')", // รูปเริ่มต้น
             backgroundSize: "cover",
             backgroundPosition: "center",
-            minHeight: "900px",
+            backgroundRepeat: "no-repeat",
           }}
+          className="responsive-header" // เพิ่มคลาสเพื่อควบคุมด้วย CSS
         >
-          <div className="container">
-            <div className="card">
-              <div className="card-body">LOGO</div>
-            </div>
+          <div
+            style={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontSize: "36px",
+              fontWeight: "bold",
+              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+            }}
+          >
+            {/* เนื้อหาหรือข้อความใน Header */}
           </div>
-        </div>
-        <div
-          style={{
-            backgroundColor: "#0C0C0C",
-            minHeight: "100vh",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div className="container">
-            <h1 style={{ textAlign: "center" }}>ประวัติ</h1>
-            <div className="col-md-4 mb-3">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">Card title 1</h5>
-                  <p className="card-text">
-                    เลอมัง คือ รายการแข่งขันรถยนต์ชื่อดังจากประเทศฝรั่งเศส
-                    มีชื่อเต็มๆ ว่า 24 hours of le mans (เลอมังส์ 24 ชั่วโมง)
-                    เป็นรายการแข่งรถสุดโหดที่ก่อตั้งขึ้นเมื่อปี ค.ศ. 1923
-                    ในเมือง Le Mans โดยจุดประสงค์ของการแข่งขันเลอมัง คือ
-                    เพื่อทดสอบสมรรถนะของรถยนต์และความแข็งแกร่งของผู้ขับขี่เพราะว่าในการแข่งขัน
-                    24 hours of Le Mans
-                  </p>
-                </div>
-                <img src="/Le-Mans.jpg" className="card-img-top" alt="..." />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            backgroundColor: "#f5f5f5",
-            minHeight: "200vh",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <div className="container">
-            <div className="card-body">
+        </header>
 
-            </div>
-          </div>
+
+
+
+        <div className="container">
+          {/* Main content */}
         </div>
+
+        {/* Footer */}
         <footer
-          style={{ backgroundColor: "#333", color: "#fff", padding: "20px 0" }}
+          style={{
+            backgroundColor: "#240C31",
+            color: "#fff",
+            padding: "20px 0",
+            textAlign: "center",
+          }}
         >
           <div className="container">
             <div className="row">
-              <div className="col-md-4">
-                <h5>ส่วนที่ 1</h5>
-                <p>ข้อความหรือข้อมูลสำหรับส่วนที่ 1 ของ footer ที่นี่</p>
-              </div>
-              <div className="col-md-4">
-                <h5>ส่วนที่ 2</h5>
-                <p>ข้อความหรือข้อมูลสำหรับส่วนที่ 2 ของ footer ที่นี่</p>
-              </div>
-              <div className="col-md-4">
-                <h5>ติดต่อสอบถาม</h5>
-                <p>ข้อความหรือข้อมูลสำหรับส่วนที่ 3 ของ footer ที่นี่</p>
+              <div className="col-md-12">
+                <div style={{ marginBottom: "10px" }}>
+                  <a
+                    href="https://www.youtube.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ margin: "0 10px", color: "#fff", fontSize: "24px" }}
+                  >
+                    <FontAwesomeIcon icon={faYoutube} />
+                  </a>
+                  <a
+                    href="https://www.tiktok.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ margin: "0 10px", color: "#fff", fontSize: "24px" }}
+                  >
+                    <FontAwesomeIcon icon={faTiktok} />
+                  </a>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <img
+                    src="/logo.png"
+                    alt="Golden Recipe Logo"
+                    style={{ height: "40px", width: "auto" }}
+                  />
+                </div>
+                <p style={{ color: "#6E5C80" }}>
+                  Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                  when an unknown printer took a galley of type and scrambled it to make a type
+                  specimen book.
+                </p>
               </div>
             </div>
           </div>
+        </footer>
+        <footer
+          style={{
+            backgroundColor: "#2B1139",
+            color: "#6E5C80",
+            padding: "10px 0",
+            fontSize: "14px",
+            fontWeight: "bold",
+            bottom: "0",
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          © Copy right 2025
         </footer>
       </div>
     );

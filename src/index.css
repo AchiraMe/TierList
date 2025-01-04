@@ -11,3 +11,44 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.App {
+  display: flex;
+  flex-direction: column; /* จัดเรียงองค์ประกอบในแนวตั้ง */
+  min-height: 100vh; /* ความสูงขั้นต่ำเท่ากับหน้าจอ */
+}
+
+.container {
+  flex-grow: 1; /* ยืดพื้นที่ให้เต็มหน้าจอสำหรับเนื้อหา */
+}
+
+footer {
+  background-color: #240C31;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.responsive-header {
+  background-image: url('/public/headlogo.png'); /* รูปเริ่มต้น */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 500px; /* ปรับความสูงตามต้องการ */
+  position: relative;
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, rgba(0, 0, 0, 0));
+  mask-image: linear-gradient(to bottom, black 60%, rgba(0, 0, 0, 0));
+}
+
+@media (max-width: 768px) {
+  .responsive-header {
+    background-image: url('/public/headlogosm.png'); /* รูปสำหรับหน้าจอเล็ก */
+  }
+}
+
+
+
+
+
+
+
