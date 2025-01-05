@@ -18,33 +18,20 @@ const About = () => {
             <header
                 style={{
                     width: "100%",
-                    height: "500px",
+                    height: "100px",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
                 }}
-                // className="responsive-header"
+            // className="responsive-header"
             >
-                <div
-                    style={{
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#fff",
-                        fontSize: "36px",
-                        fontWeight: "bold",
-                        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
-                    }}
-                >
-                    Welcome to About
-                </div>
+                
             </header>
 
             {/* Content */}
             <div
                 style={{
-                    flex: "1", // ดัน Footer ลงล่าง
+                    // flex: "1", // ดัน Footer ลงล่าง
                     padding: "20px",
                     wordWrap: "break-word"
                 }}
@@ -61,7 +48,7 @@ const About = () => {
                         <div className="col-md-6 order-2 order-md-1 text-section text-center text-md-start">
                             <h1>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h1>
                             <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                        
+
                             {/* ปุ่มกดโซเชียลมีเดีย */}
                             <div className="social-icons d-flex justify-content-center justify-content-md-start">
                                 <button className="social-btn facebook">
@@ -99,7 +86,7 @@ const About = () => {
                         <div className="col-md-6 order-2 order-md-2 text-section text-center text-md-end">
                             <h1>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h1>
                             <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                        
+
                             {/* ปุ่มกดโซเชียลมีเดีย */}
                             <div className="social-icons d-flex justify-content-center justify-content-md-end">
                                 <button className="social-btn facebook">
@@ -133,49 +120,112 @@ const About = () => {
                     textAlign: "center",
                 }}
             >
-                <div className="container">
+                <div className="container text-section .social-icon">
                     <div className="row">
-                        <div className="col-md-12">
+                        <div className="col-md-8" style={{ textAlign: "left" }}>
+                            <img
+                                src="/logo.png"
+                                alt="Golden Recipe Logo"
+                                style={{ height: "40px", width: "auto", marginBottom: "10px" }}
+                            />
+                            <p style={{ color: "#6E5C80" }}>
+                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                            </p>
+                        </div>
+
+                            {/*ถุงชา*/}
+                        <div className="col-md-2" style={{ textAlign: "left" }}>
+                            <h3>ถุงชา</h3>
+                            <div style={{ marginBottom: "10px" }}>
+                                <a
+                                    href="https://www.facebook.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img src="/facebook-icon.png" alt="Facebook" style={{ height: "24px", marginRight: "5px" }} />
+                                    Facebook
+                                </a>
+                            </div>
+                            <div style={{ marginBottom: "10px" }}>
+                                <a
+                                    href="https://www.instagram.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img src="/instagram-icon.png" alt="Instagram" style={{ height: "24px", marginRight: "5px" }} />
+                                    Instagram
+                                </a>
+                            </div>
                             <div style={{ marginBottom: "10px" }}>
                                 <a
                                     href="https://www.youtube.com/"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{ margin: "0 10px", color: "#fff", fontSize: "24px" }}
                                 >
+                                    <img src="/youtube-icon.png" alt="YouTube" style={{ height: "24px", marginRight: "5px" }} />
                                     YouTube
                                 </a>
+                            </div>
+                            <div style={{ marginBottom: "10px" }}>
                                 <a
                                     href="https://www.tiktok.com/"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{ margin: "0 10px", color: "#fff", fontSize: "24px" }}
                                 >
+                                    <img src="/tiktok-icon.png" alt="TikTok" style={{ height: "24px", marginRight: "5px" }} />
                                     TikTok
                                 </a>
                             </div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: "10px",
-                                    marginBottom: "20px",
-                                }}
-                            >
-                                <img
-                                    src="/logo.png"
-                                    alt="Golden Recipe Logo"
-                                    style={{ height: "40px", width: "auto" }}
-                                />
+                        </div>
+
+                                {/* Cursedzxz */}
+                        <div className="col-md-2" style={{ textAlign: "left" }}>
+                            <h3>Cursedzxz</h3>
+                            <div style={{ marginBottom: "10px" }}>
+                                <a
+                                    href="https://www.facebook.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img src="/facebook-icon.png" alt="Facebook" style={{ height: "24px", marginRight: "5px" }} />
+                                    Facebook
+                                </a>
                             </div>
-                            <p style={{ color: "#6E5C80" }}>
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                            </p>
+                            <div style={{ marginBottom: "10px" }}>
+                                <a
+                                    href="https://www.instagram.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img src="/instagram-icon.png" alt="Instagram" style={{ height: "24px", marginRight: "5px" }} />
+                                    Instagram
+                                </a>
+                            </div>
+                            <div style={{ marginBottom: "10px" }}>
+                                <a
+                                    href="https://www.youtube.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img src="/youtube-icon.png" alt="YouTube" style={{ height: "24px", marginRight: "5px" }} />
+                                    YouTube
+                                </a>
+                            </div>
+                            <div style={{ marginBottom: "10px" }}>
+                                <a
+                                    href="https://www.tiktok.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <img src="/tiktok-icon.png" alt="TikTok" style={{ height: "24px", marginRight: "5px" }} />
+                                    TikTok
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </footer>
+
 
             {/* Bottom Footer */}
             <footer
