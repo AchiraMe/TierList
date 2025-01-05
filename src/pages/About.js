@@ -23,7 +23,7 @@ const About = () => {
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
                 }}
-                className="responsive-header"
+                // className="responsive-header"
             >
                 <div
                     style={{
@@ -46,9 +46,81 @@ const About = () => {
                 style={{
                     flex: "1", // ดัน Footer ลงล่าง
                     padding: "20px",
+                    wordWrap: "break-word"
                 }}
             >
+                {/* คนที่1 */}
                 <div className="container">
+                    <div className="row d-flex align-items-center">
+                        {/* รูปบุคคล */}
+                        <div className="col-md-6 order-1 order-md-2 profile-section">
+                            <img className="profile-img" src="/Char1.PNG" alt="profile" />
+                        </div>
+
+                        {/* ข้อมูลของรายละเอียด (ข้อความ) */}
+                        <div className="col-md-6 order-2 order-md-1 text-section text-center text-md-start">
+                            <h1>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h1>
+                            <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+                        
+                            {/* ปุ่มกดโซเชียลมีเดีย */}
+                            <div className="social-icons d-flex justify-content-center justify-content-md-start">
+                                <button className="social-btn facebook">
+                                    <img src="/facebook-icon.png" alt="Facebook" className="social-icon" />
+                                    Facebook
+                                </button>
+                                <button className="social-btn instagram">
+                                    <img src="/instagram-icon.png" alt="Instagram" className="social-icon" />
+                                    Instagram
+                                </button>
+                                <button className="social-btn youtube">
+                                    <img src="/youtube-icon.png" alt="Youtube" className="social-icon" />
+                                    Youtube
+                                </button>
+                                <button className="social-btn tiktok">
+                                    <img src="/tiktok-icon.png" alt="Tiktok" className="social-icon" />
+                                    Tiktok
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* คนที่2 */}
+                <div className="container">
+                    <div className="row d-flex align-items-center">
+                        {/* รูปบุคคล */}
+                        <div className="col-md-6 order-1 order-md-1 profile-section">
+                            <img className="profile-img" src="/Char2.PNG" alt="profile" />
+                        </div>
+
+                        {/* ข้อมูลของรายละเอียด (ข้อความ) */}
+                        <div className="col-md-6 order-2 order-md-2 text-section text-center text-md-end">
+                            <h1>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</h1>
+                            <p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+                        
+                            {/* ปุ่มกดโซเชียลมีเดีย */}
+                            <div className="social-icons d-flex justify-content-center justify-content-md-end">
+                                <button className="social-btn facebook">
+                                    <img src="/facebook-icon.png" alt="Facebook" className="social-icon" />
+                                    Facebook
+                                </button>
+                                <button className="social-btn instagram">
+                                    <img src="/instagram-icon.png" alt="Instagram" className="social-icon" />
+                                    Instagram
+                                </button>
+                                <button className="social-btn youtube">
+                                    <img src="/youtube-icon.png" alt="Youtube" className="social-icon" />
+                                    Youtube
+                                </button>
+                                <button className="social-btn tiktok">
+                                    <img src="/tiktok-icon.png" alt="Tiktok" className="social-icon" />
+                                    Tiktok
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
