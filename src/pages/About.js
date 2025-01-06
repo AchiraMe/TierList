@@ -18,7 +18,7 @@ const About = () => {
             <header
                 style={{
                     width: "100%",
-                    height: "100px",
+                    height: "50px",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundRepeat: "no-repeat",
@@ -134,9 +134,9 @@ const About = () => {
                         </div>
 
                             {/*ถุงชา*/}
-                        <div className="col-md-2" style={{ textAlign: "left" }}>
+                        <div className="col-md-2" style={{ textAlign: "left", color: "white"}}>
                             <h3>ถุงชา</h3>
-                            <div style={{ marginBottom: "10px" }}>
+                            <div style={{ marginBottom: "10px", }}>
                                 <a
                                     href="https://www.facebook.com/"
                                     target="_blank"
@@ -179,7 +179,7 @@ const About = () => {
                         </div>
 
                                 {/* Cursedzxz */}
-                        <div className="col-md-2" style={{ textAlign: "left" }}>
+                        <div className="col-md-2" style={{ textAlign: "left", color: "white" }}>
                             <h3>Cursedzxz</h3>
                             <div style={{ marginBottom: "10px" }}>
                                 <a
