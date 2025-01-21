@@ -6,20 +6,29 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Admin from "./pages/Admin/Admin";
 import Manager from "./pages/Admin/Manager";
+import Tierlist from "./pages/Admin/Tierlist";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={ <><Navbar /><Home /> </>}/>
-        <Route path="/about" element={ <><Navbar /><About /></>} />
+        <Route path="/" element={<><Navbar /><Home /> </>} />
+        <Route path="/about" element={<><Navbar /><About /></>} />
         <Route path="/admin" element={<Admin />} />
         <Route
           path="/manager"
           element={
             <ProtectedRoute>
               <Manager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tierlist"
+          element={
+            <ProtectedRoute>
+              <Tierlist />
             </ProtectedRoute>
           }
         />

@@ -28,8 +28,8 @@ const AdminNavbar = () => {
         <Nav.Link href="/manager" style={{ color: "#fff" }}>
           Dashboard
         </Nav.Link>
-        <Nav.Link href="/admin" style={{ color: "#fff" }}>
-          Admin Settings
+        <Nav.Link href="/tierlist" style={{ color: "#fff" }}>
+          Tier list
         </Nav.Link>
         <Nav.Link href="#" style={{ color: "#fff" }}>
           Reports
