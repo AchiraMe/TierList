@@ -9,6 +9,7 @@ class Admin extends Component {
       email: "",
       password: "",
       isLoggedIn: false,
+      error: "", // เก็บข้อความแสดงข้อผิดพลาด
     };
   }
 
@@ -17,19 +18,38 @@ class Admin extends Component {
     this.setState({ [name]: value });
   };
 
-  handleLogin = () => {
+  handleLogin = async () => {
     const { email, password } = this.state;
 
-    if (email === "admin" && password === "admin") {
-      Cookies.set("isLoggedIn", "true", { expires: 1 }); // ตั้งค่า cookie
-      this.setState({ isLoggedIn: true });
-    } else {
-      alert("Invalid email or password.");
+    try {
+      // เรียก API เพื่อนำข้อมูลผู้ใช้มาเปรียบเทียบ
+      const response = await fetch("https://api.lemansturismo.com/api/users");
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const users = await response.json();
+      // ตรวจสอบว่าผู้ใช้งานมีในฐานข้อมูลหรือไม่
+      const user = users.find(
+        (user) => user.email === email && user.password === password
+      );
+
+      if (user) {
+        // ตั้งค่า cookie และเปลี่ยนเส้นทาง
+        Cookies.set("isLoggedIn", "true", { expires: 1 });
+        this.setState({ isLoggedIn: true });
+      } else {
+        // หากไม่พบข้อมูลให้แสดงข้อผิดพลาด
+        this.setState({ error: "Invalid email or password." });
+      }
+    } catch (error) {
+      this.setState({ error: "An error occurred while logging in." });
+      console.error(error);
     }
   };
 
   render() {
-    const { email, password, isLoggedIn } = this.state;
+    const { email, password, isLoggedIn, error } = this.state;
 
     if (isLoggedIn) {
       return <Navigate to="/manager" />;
@@ -38,6 +58,9 @@ class Admin extends Component {
     return (
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         <h1>Admin Login</h1>
+        {error && (
+          <p style={{ color: "red", marginBottom: "15px" }}>{error}</p>
+        )}
         <form
           style={{
             display: "inline-block",
