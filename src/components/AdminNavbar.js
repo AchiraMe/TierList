@@ -16,9 +16,7 @@ class AdminNavbar extends Component {
     const token = Cookies.get("token");
     if (token) {
       try {
-        console.log("Fetching user info with token:", token);
         const data = await new Service().getuserinfo(token);
-        console.log("API Response Data:", data);
         this.setState({ username: data.username });
       } catch (error) {
         console.error("Failed to fetch user info:", error);

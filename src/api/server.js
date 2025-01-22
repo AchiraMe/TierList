@@ -26,6 +26,23 @@ export default class Service {
       throw error;
     }
   };
+  getcharacters = async (token) => {
+    const config = {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`, // เพิ่ม Bearer Token
+      },
+    };
+  
+    try {
+      const response = await axios.get(`${BASE_URL}/getcharacters`, config);
+      return response.data; // Return ข้อมูลที่ได้จาก API
+    } catch (error) {
+      console.error("Error in characters:", error);
+      throw error;
+    }
+  };
+  
   getuserinfo = async (token) => {
     const config = {
       headers: {
