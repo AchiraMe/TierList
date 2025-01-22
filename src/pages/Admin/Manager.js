@@ -4,9 +4,9 @@ import Cookies from "js-cookie";
 import AdminNavbar from "../../components/AdminNavbar";
 
 const Manager = () => {
-  const isLoggedIn = Cookies.get("isLoggedIn");
+  const token = Cookies.get("token"); // ใช้ token แทน isLoggedIn
 
-  if (!isLoggedIn) {
+  if (!token) {
     return <Navigate to="/admin" />;
   }
 

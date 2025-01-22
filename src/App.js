@@ -16,6 +16,8 @@ const App = () => {
         <Route path="/" element={<><Navbar /><Home /> </>} />
         <Route path="/about" element={<><Navbar /><About /></>} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/manager" element={<Manager />} />
+        <Route path="/tierlist" element={<Tierlist />} />
         <Route
           path="/manager"
           element={
@@ -65,7 +67,7 @@ const Navbar = () => {
       }}
     >
       <div className="container">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand" href="/">
           <img
             src="/logo.png"
             alt="Logo"

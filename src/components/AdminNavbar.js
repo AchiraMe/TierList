@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Nav } from "react-bootstrap";
 import Cookies from "js-cookie";
 import withRouter from "../hoc/withRouter"; // นำเข้า HOC
-import Service from "../services/Service"; // นำเข้า Service
+import Service from "../api/server"; // นำเข้า Service
 
 class AdminNavbar extends Component {
   constructor(props) {
@@ -12,28 +12,27 @@ class AdminNavbar extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const token = Cookies.get("token");
     if (token) {
-      this.getuserinfo(token);
+      try {
+        console.log("Fetching user info with token:", token);
+        const data = await new Service().getuserinfo(token);
+        console.log("API Response Data:", data);
+        this.setState({ username: data.username });
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    } else {
+      console.error("No token found in cookies.");
+      this.props.router.navigate("/admin");
     }
   }
 
-  getuserinfo = async (token) => {
-    try {
-      const res = await new Service().getuserinfo(token);
-      this.setState({
-        username: res.data.username,
-      });
-    } catch (error) {
-      console.error("Failed to fetch user info:", error);
-    }
-  };
-
   handleLogout = () => {
-    Cookies.remove("isLoggedIn"); // ลบ cookie
-    Cookies.remove("token"); // ลบ token
-    this.props.router.navigate("/admin"); // เปลี่ยนเส้นทางกลับไปหน้า Login
+    Cookies.remove("isLoggedIn");
+    Cookies.remove("token");
+    this.props.router.navigate("/admin");
   };
 
   render() {
@@ -53,8 +52,9 @@ class AdminNavbar extends Component {
       >
         <h4 style={{ textAlign: "center", color: "#fff" }}>Admin Panel</h4>
         <p style={{ textAlign: "center", color: "#fff" }}>
-          {username ? `Welcome, ${username}` : "Loading..."}
+          {username ? `Welcome, ${username}` : ""}
         </p>
+
         <Nav className="flex-column">
           <Nav.Link href="/manager" style={{ color: "#fff" }}>
             Dashboard

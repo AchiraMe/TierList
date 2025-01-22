@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import Service from "../../api/server"; // นำเข้า Service class
 
 class Admin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
+      username: "",
       password: "",
       isLoggedIn: false,
       error: "", // เก็บข้อความแสดงข้อผิดพลาด
@@ -18,39 +19,42 @@ class Admin extends Component {
     this.setState({ [name]: value });
   };
 
-  handleLogin = async () => {
-    const { email, password } = this.state;
+  submitLogin = async () => {
+    const { username, password } = this.state;
+
+    if (!username || !password) {
+      this.setState({ error: "Please enter both username and password." });
+      return;
+    }
 
     try {
-      // เรียก API เพื่อนำข้อมูลผู้ใช้มาเปรียบเทียบ
-      const response = await fetch("https://api.lemansturismo.com/api/users");
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
+      // เรียกใช้ gettoken เพื่อทำการล็อกอิน
+      const data = await new Service().gettoken(username, password);
 
-      const users = await response.json();
-      // ตรวจสอบว่าผู้ใช้งานมีในฐานข้อมูลหรือไม่
-      const user = users.find(
-        (user) => user.email === email && user.password === password
-      );
+      console.log("Parsed response data:", data);
 
-      if (user) {
-        // ตั้งค่า cookie และเปลี่ยนเส้นทาง
-        Cookies.set("isLoggedIn", "true", { expires: 1 });
-        this.setState({ isLoggedIn: true });
+      if (data && data.success && data.token) {
+        Cookies.set("token", data.token, {
+          path: "/",
+          expires: 1 / 6, // 4 ชั่วโมง
+        });
+
+        // เปลี่ยนสถานะเป็นล็อกอินสำเร็จ
+        this.setState({ isLoggedIn: true, error: "" });
       } else {
-        // หากไม่พบข้อมูลให้แสดงข้อผิดพลาด
-        this.setState({ error: "Invalid email or password." });
+        this.setState({ error: "Login failed. Please check your credentials." });
       }
     } catch (error) {
-      this.setState({ error: "An error occurred while logging in." });
-      console.error(error);
+      console.error("Login error:", error);
+      this.setState({ error: "An error occurred. Please try again later." });
     }
   };
 
-  render() {
-    const { email, password, isLoggedIn, error } = this.state;
 
+  render() {
+    const { username, password, isLoggedIn, error } = this.state;
+
+    // เปลี่ยนเส้นทางไปหน้า /manager หากล็อกอินสำเร็จ
     if (isLoggedIn) {
       return <Navigate to="/manager" />;
     }
@@ -71,11 +75,11 @@ class Admin extends Component {
           }}
         >
           <div style={{ marginBottom: "15px" }}>
-            <label>Email:</label>
+            <label>Username:</label>
             <input
-              type="email"
-              name="email"
-              value={email}
+              type="text"
+              name="username"
+              value={username}
               onChange={this.handleInputChange}
               style={{
                 display: "block",
@@ -108,7 +112,7 @@ class Admin extends Component {
 
           <button
             type="button"
-            onClick={this.handleLogin}
+            onClick={this.submitLogin}
             style={{
               backgroundColor: "#007BFF",
               color: "white",
@@ -124,6 +128,7 @@ class Admin extends Component {
       </div>
     );
   }
+
 }
 
 export default Admin;
