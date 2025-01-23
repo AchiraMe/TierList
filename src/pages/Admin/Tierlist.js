@@ -10,7 +10,7 @@ export default class Tierlist extends Component {
     this.state = {
       token: Cookies.get("token"),
       dataX: [],
-      error: null,
+      patch: "",
     };
   }
 
@@ -41,51 +41,106 @@ export default class Tierlist extends Component {
       this.setState({ error: "Failed to fetch character data." });
     }
   };
+  onChangePatch = (event) => {
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
+  };
+  SubmitPatch = async (event) => {
+    event.preventDefault(); // ป้องกันการรีเฟรชหน้า
+    const { token, patch } = this.state; // ดึง token และ patch จาก state
+
+    if (patch) {
+      console.log("Form Data:", { patch });
+      try {
+        // เรียก API สำหรับส่งข้อมูล
+        const response = await new Service().submitPatch(token, patch);
+        console.log("API Response:", response);
+
+        alert("Patch submitted successfully!");
+
+        this.setState({ patch: "" }); // รีเซ็ตค่า patch หลังส่งสำเร็จ
+      } catch (error) {
+        // จัดการข้อผิดพลาด
+        console.error("Error submitting patch:", error);
+        alert("Failed to submit patch. Please try again.");
+      }
+    } else {
+      alert("Please fill in all required fields.");
+    }
+  };
+
+
 
 
 
   render() {
-    const { token, dataX, error } = this.state;
+    const { token } = this.state;
 
     if (!token) {
       return <Navigate to="/admin" />;
     }
-
     return (
-      <div style={{ display: "flex", height: "100vh" }}>
-        <AdminNavbar />
+      <>
+        <style>
+          {`
+          .layout-wrapper {
+            display: flex;
+          }
+          .sidebar {
+            width: 250px; /* ความกว้าง Sidebar */
+            background-color: #f8f9fa; /* สีพื้นหลัง */
+          }
+          .main-content {
+            flex: 1;
+            padding: 20px;
+          }
+        `}</style>
 
-        <div style={{ flex: 1, padding: "20px" }}>
-          <h1>Tierlist Dashboard</h1>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <div className="characters-container">
-            {dataX.length > 0 ? (
-              <div className="characters-grid">
-                {dataX.map((character) => (
-                  <div key={character.id} className="character-card">
-                    <h2>ID: {character.id}</h2>
-                    <p>Name: {character.name}</p>
-                    <img
-                      src={`data:image/png;base64,${character.img}`} // ใช้ Base64 data จากฟิลด์ img
-                      alt={character.name}
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                      }}
-                    />
+        <div className="layout-wrapper">
+          {/* Sidebar */}
+          <div className="sidebar">
+            <AdminNavbar />
+          </div>
+
+          {/* Main Content */}
+          <div className="main-content">
+            <div className="card mt-2" id="container">
+              <div className="card-body">
+                <div className="row col-12 m-auto">
+                  <div className="col-12 col-xl-12 xl-100 box-col-12">
+                    <div className="row">
+                      <div className="col-12 m-auto m-t-15">
+                        <h4>Tierlist Patch</h4>
+                        <form onSubmit={this.SubmitPatch}>
+                          <div className="form-group">
+                            <label htmlFor="patch">Patch Name</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="patch"
+                              name="patch"
+                              placeholder="Enter patch name"
+                              value={this.state.patch || ""}
+                              onChange={this.onChangePatch}
+                              required
+                            />
+                          </div>
+                          <button type="submit" className="btn btn-primary mt-3">
+                            Save
+                          </button>
+                        </form>
+
+                      </div>
+
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
-            ) : (
-              <p>No characters available.</p>
-            )}
+            </div>
           </div>
         </div>
 
-
-      </div>
+      </>
     );
   }
 }

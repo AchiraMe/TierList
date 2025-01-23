@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Modal, Button } from "react-bootstrap"; // ใช้ React Bootstrap
+import Service from "../api/server"; // นำเข้า Service
 
 const itemsDatabase = [
     { id: 1, name: "Item 1", image: "/Avatar/1.png" },
@@ -15,9 +16,33 @@ class Home extends Component {
             showModal: false,
             currentTier: null,
             currentIdx: null,
+            patch: "",
         };
     }
 
+      componentDidMount() {
+        this.GetPatch();
+      }
+
+      GetPatch = async () => {
+        try {
+            const response = await new Service().GetPatch(); // เรียก API ด้วย GET
+    
+            if (response.success) {
+                const patches = response.patches;
+    
+                const latestPatch = patches[patches.length - 1] || "Unknown Patch"; // เลือก patch ล่าสุด
+                this.setState({ patch: latestPatch }); // อัปเดต state
+            } else {
+                console.error("Failed to fetch patch data:", response.message);
+            }
+        } catch (error) {
+            console.error("Error fetching patch data:", error);
+        }
+    };
+    
+    
+    
     handleSelectItem = (item) => {
         const { currentTier, currentIdx } = this.state;
         if (currentTier !== null && currentIdx !== null) {
@@ -49,7 +74,7 @@ class Home extends Component {
     };
 
     render() {
-        const { selectedItems, showModal, currentTier, currentIdx } = this.state;
+        const { selectedItems, showModal, patch,  } = this.state;
 
         return (
             <div
@@ -91,7 +116,25 @@ class Home extends Component {
                             <h1 style={{ fontSize: "100px", fontWeight: "bold", margin: "0" }}>
                                 TIERLIST
                             </h1>
-                            <h2 style={{ fontSize: "32px", margin: "10px 0", color: "#FFD700" }}>PATCH 14.4B</h2>
+                            <h2
+                                style={{
+                                    fontSize: "32px",
+                                    margin: "20px 0",
+                                    color: "#FFD700",
+                                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                    padding: "18px 20px",
+                                    border: "2px solid #FFD700",
+                                    borderRadius: "10px",
+                                    display: "inline-block",
+                                    fontWeight: "bold",
+                                    textAlign: "center",
+                                }}
+                            >
+                                <span style={{ fontSize: "40px", marginRight: "5px" }}>»</span>
+                                PATCH {this.state.patch} {/* แสดงค่าของ patch */}
+                                <span style={{ fontSize: "40px", marginLeft: "5px" }}>«</span>
+                            </h2>
+
                             <p style={{ fontSize: "20px", margin: "10px 0" }}>
                                 โพยคอมพ์เทพโดยแรงก์ <span style={{ color: "#FFD700" }}>1</span>{" "}
                                 ของเซิร์ฟเวอร์

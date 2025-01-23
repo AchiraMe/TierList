@@ -33,7 +33,7 @@ export default class Service {
         Authorization: `Bearer ${token}`, // เพิ่ม Bearer Token
       },
     };
-  
+
     try {
       const response = await axios.get(`${BASE_URL}/getcharacters`, config);
       return response.data; // Return ข้อมูลที่ได้จาก API
@@ -42,7 +42,7 @@ export default class Service {
       throw error;
     }
   };
-  
+
   getuserinfo = async (token) => {
     const config = {
       headers: {
@@ -63,6 +63,47 @@ export default class Service {
       throw error;
     }
   };
+  submitPatch = async (token, patch) => {
+    const config = {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  
+    const formData = new URLSearchParams();
+    formData.append("patch", patch);
+  
+    try {
+      const response = await axios.post(`${BASE_URL}/addPatch`, formData, config);
+      return response.data;
+    } catch (error) {
+      console.error("Error in addPatch:", error);
+      throw error;
+    }
+  };
+  GetPatch = async () => {
+    const config = {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
+
+    const formData = new URLSearchParams();
+    formData.append("method", "GetPatch");
+
+    try {
+      const response = await axios.get(`${BASE_URL}/GetPatch`, formData, config);
+      return response.data;
+    } catch (error) {
+      console.error("Error in GetPatch:", error);
+      throw error;
+    }
+  };
+
+
 
 
 }
