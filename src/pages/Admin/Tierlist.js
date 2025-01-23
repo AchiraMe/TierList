@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import AdminNavbar from "../../components/AdminNavbar";
 import Service from "../../api/server";
+import { Modal, Button } from "react-bootstrap";
 
 export default class Tierlist extends Component {
   constructor(props) {
@@ -11,7 +12,15 @@ export default class Tierlist extends Component {
       token: Cookies.get("token"),
       dataX: [],
       patch: "",
+      activeTabS: 1,
+      activeTabA: 1,
+      isContentVisibleS: true,
+      isContentVisibleA: true,
+      showModal: false,
+      characterName: "",
     };
+    this.fileInputRef = React.createRef();
+
   }
 
   componentDidMount() {
@@ -50,31 +59,96 @@ export default class Tierlist extends Component {
     const { token, patch } = this.state; // ดึง token และ patch จาก state
 
     if (patch) {
-      console.log("Form Data:", { patch });
       try {
-        // เรียก API สำหรับส่งข้อมูล
         const response = await new Service().submitPatch(token, patch);
-        console.log("API Response:", response);
 
         alert("Patch submitted successfully!");
 
-        this.setState({ patch: "" }); // รีเซ็ตค่า patch หลังส่งสำเร็จ
+        this.setState({ patch: "" }); 
       } catch (error) {
-        // จัดการข้อผิดพลาด
-        console.error("Error submitting patch:", error);
         alert("Failed to submit patch. Please try again.");
       }
     } else {
       alert("Please fill in all required fields.");
     }
   };
+  Addcharacters = async ( base64Image, characterName) => {
+    try {
+      console.log("Starting Addcharacters function...");
+      console.log("Base64 Image:", base64Image ? base64Image.substring(0, 50) + "..." : "No Image"); // แสดงแค่ส่วนต้นของ Base64
+      console.log("Character Name:", characterName);
+  
+      const response = await new Service().Addcharacters(base64Image, characterName);
+  
+      console.log("API Response:", response);
+  
+      if (response.success) {
+        alert("เพิ่มตัวละครสำเร็จ!");
+        console.log("Character added successfully.");
+        this.setState({ uploadedFile: null, base64Image: null, characterName: "" });
+      } else {
+        console.warn("Add character failed:", response.message || "Unknown error");
+        alert("ไม่สามารถเพิ่มตัวละครได้");
+      }
+    } catch (error) {
+      console.error("Error adding character:", error);
+      alert("Failed to submit. Please try again.");
+    }
+  };
+  
 
+  changeTabS = (tabNumber) => {
+    this.setState({ activeTabS: tabNumber });
+  };
 
+  // ฟังก์ชันเปลี่ยนแท็บของ A Tier
+  changeTabA = (tabNumber) => {
+    this.setState({ activeTabA: tabNumber });
+  };
 
+  handleModalShow = () => {
+    this.setState({ showModal: true });
+  };
+
+  handleModalClose = () => {
+    this.setState({ showModal: false });
+  };
+
+  handleOptionSelect = (option) => {
+    this.setState({ selectedOption: option, showModal: false });
+  };
+
+  handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "image/png") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({ uploadedFile: file, base64Image: reader.result.split(",")[1] }); // เก็บ Base64
+      };
+      reader.readAsDataURL(file); // อ่านไฟล์เป็น Base64
+    } else {
+      alert("กรุณาอัปโหลดเฉพาะไฟล์ PNG");
+    }
+  };
+  handleConfirmUpload = () => {
+    const { base64Image, characterName } = this.state;
+    if (!characterName) {
+      alert("กรุณากรอกชื่อตัวละครก่อนยืนยัน");
+      return;
+    }
+    if (!base64Image) {
+      alert("กรุณาอัปโหลดรูปก่อนยืนยัน");
+      return;
+    }
+  
+    // เรียกใช้ Addcharacters
+    this.Addcharacters(base64Image, characterName);
+  };
+  
 
 
   render() {
-    const { token } = this.state;
+    const { token, activeTabS, activeTabA, isContentVisibleS, isContentVisibleA } = this.state;
 
     if (!token) {
       return <Navigate to="/admin" />;
@@ -94,6 +168,22 @@ export default class Tierlist extends Component {
             flex: 1;
             padding: 20px;
           }
+                      .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+          }
+          .tab {
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+          .tab.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+          }
         `}</style>
 
         <div className="layout-wrapper">
@@ -101,7 +191,6 @@ export default class Tierlist extends Component {
           <div className="sidebar">
             <AdminNavbar />
           </div>
-
           {/* Main Content */}
           <div className="main-content">
             <div className="card mt-2" id="container">
@@ -137,8 +226,242 @@ export default class Tierlist extends Component {
                 </div>
               </div>
             </div>
+            {/* S Tier */}
+            <div className="card mt-3" id="container">
+              <div className="card-body">
+                <div className="row col-12 m-auto">
+                  <div className="col-12 col-xl-12 xl-100 box-col-12">
+                    <div className="row">
+                      <div className="col-12 m-auto m-t-15">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <h4>S Tier</h4>
+                          <button
+                            onClick={() =>
+                              this.setState({ isContentVisibleS: !isContentVisibleS })
+                            }
+                            style={{
+                              padding: "5px 10px",
+                              backgroundColor: isContentVisibleS ? "#d9534f" : "#5cb85c",
+                              color: "white",
+                              borderRadius: "5px",
+                              cursor: "pointer",
+                              border: "none",
+                            }}
+                          >
+                            {isContentVisibleS ? "ย่อเนื้อหา" : "ขยายเนื้อหา"}
+                          </button>
+
+                        </div>
+
+                        {isContentVisibleS && (
+                          <>
+                            <div className="tabs" style={{ marginTop: "20px" }}>
+                              {[...Array(9)].map((_, idx) => (
+                                <div
+                                  key={idx}
+                                  className={`tab ${activeTabS === idx + 1 ? "active" : ""}`}
+                                  onClick={() => this.changeTabS(idx + 1)}
+                                >
+                                  Tab {idx + 1}
+                                </div>
+                              ))}
+                            </div>
+
+                            <div style={{ marginTop: "20px" }}>
+                              {/* Tab 1 Content */}
+                              {activeTabS === 1 && (
+                                <div>
+                                  <p>เนื้อหาของ Tab 1 ใน S Tier</p>
+                                  <Button variant="primary" onClick={this.handleModalShow}>
+                                    เปิด Modal
+                                  </Button>
+
+
+                                  {/* แสดงค่าที่เลือก */}
+                                  {this.state.selectedOption && (
+                                    <p style={{ marginTop: "20px" }}>
+                                      คุณเลือก: <strong>{this.state.selectedOption}</strong>
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+
+                              {activeTabS === 2 && <p>เนื้อหาของ Tab 2 ใน S Tier</p>}
+                              {activeTabS === 3 && <p>เนื้อหาของ Tab 3 ใน S Tier</p>}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* A Tier */}
+            <div className="card mt-3" id="container">
+              <div className="card-body">
+                <div className="row col-12 m-auto">
+                  <div className="col-12 col-xl-12 xl-100 box-col-12">
+                    <div className="row">
+                      <div className="col-12 m-auto m-t-15">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <h4>A Tier</h4>
+                          <button
+                            onClick={() =>
+                              this.setState({ isContentVisibleA: !isContentVisibleA })
+                            }
+                            style={{
+                              padding: "5px 10px",
+                              backgroundColor: isContentVisibleA ? "#d9534f" : "#5cb85c",
+                              color: "white",
+                              borderRadius: "5px",
+                              cursor: "pointer",
+                              border: "none",
+                            }}
+                          >
+                            {isContentVisibleA ? "ย่อเนื้อหา" : "ขยายเนื้อหา"}
+                          </button>
+                        </div>
+
+                        {isContentVisibleA && (
+                          <>
+                            <div className="tabs" style={{ marginTop: "20px" }}>
+                              {[...Array(9)].map((_, idx) => (
+                                <div
+                                  key={idx}
+                                  className={`tab ${activeTabA === idx + 1 ? "active" : ""}`}
+                                  onClick={() => this.changeTabA(idx + 1)}
+                                >
+                                  Tab {idx + 1}
+                                </div>
+                              ))}
+                            </div>
+
+                            <div style={{ marginTop: "20px" }}>
+                              {activeTabA === 1 && <p>เนื้อหาของ Tab 1 ใน A Tier</p>}
+                              {activeTabA === 2 && <p>เนื้อหาของ Tab 2 ใน A Tier</p>}
+                              {activeTabA === 3 && <p>เนื้อหาของ Tab 3 ใน A Tier</p>}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
         </div>
+        <Modal show={this.state.showModal} onHide={this.handleModalClose} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>{this.state.uploadedFile ? "อัปโหลดรูปภาพ" : "เลือกตัวละคร"}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {!this.state.uploadedFile ? (
+              <>
+                {/* ขั้นตอนเลือกตัวละครหรืออัปโหลด */}
+                <p>กรุณาเลือกตัวละครที่ต้องการ หรืออัปโหลดรูปภาพใหม่:</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", justifyContent: "flex-start" }}>
+                  {/* แสดงข้อมูลตัวละคร */}
+                  {this.state.dataX.map((character) => (
+                    <div
+                      key={character.id}
+                      onClick={() => this.handleOptionSelect(character.name)}
+                      style={{
+                        cursor: "pointer",
+                        textAlign: "center",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        width: "100px",
+                      }}
+                    >
+                      <img
+                        src={`data:image/png;base64,${character.img}`} // ใช้ Base64 รูปภาพ
+                        alt={character.name}
+                        style={{ width: "100%", height: "80px", objectFit: "cover", borderRadius: "5px" }}
+                      />
+                      <p style={{ marginTop: "5px", fontSize: "14px", fontWeight: "bold" }}>{character.name}</p>
+                    </div>
+                  ))}
+
+                  {/* ช่อง "เพิ่มรูป" */}
+                  <div
+                    style={{
+                      cursor: "pointer",
+                      textAlign: "center",
+                      border: "2px dashed #007bff",
+                      borderRadius: "5px",
+                      padding: "10px",
+                      width: "100px",
+                      height: "130px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      color: "#007bff",
+                    }}
+                    onClick={() => this.fileInputRef.current.click()} // เปิด input file เมื่อคลิก
+                  >
+                    <p style={{ fontSize: "16px", fontWeight: "bold" }}>เพิ่มรูป</p>
+                    <span style={{ fontSize: "12px", color: "#555" }}>คลิกเพื่อเพิ่มรูป</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/png"
+                    ref={this.fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={this.handleFileUpload}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* ขั้นตอนแสดงรูปที่อัปโหลด */}
+                <p>รูปภาพที่คุณอัปโหลด:</p>
+                <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                  <img
+                    src={URL.createObjectURL(this.state.uploadedFile)}
+                    alt="Uploaded Preview"
+                    style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "10px" }}
+                  />
+                </div>
+                {/* ฟอร์มกรอกชื่อตัวละคร */}
+                <div>
+                  <input
+                    type="text"
+                    placeholder="กรอกชื่อตัวละคร"
+                    value={this.state.characterName}
+                    onChange={(e) => this.setState({ characterName: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      marginBottom: "10px",
+                    }}
+                  />
+                  <Button
+                    variant="success"
+                    onClick={this.handleConfirmUpload}
+                    style={{ width: "100%" }}
+                  >
+                    ยืนยัน
+                  </Button>
+                </div>
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleModalClose}>
+              ปิด
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+
 
       </>
     );

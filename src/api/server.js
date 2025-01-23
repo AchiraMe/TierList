@@ -83,6 +83,32 @@ export default class Service {
       throw error;
     }
   };
+  Addcharacters = async (token, base64Image, characterName) => {
+    try {
+      console.log("Starting Addcharacters function...");
+      console.log("Token:", token);
+      console.log("Base64 Image:", base64Image ? base64Image.substring(0, 50) + "..." : "No Image"); // แสดงแค่ส่วนต้นของ Base64
+      console.log("Character Name:", characterName);
+  
+      const response = await new Service().Addcharacters(token, base64Image, characterName);
+  
+      console.log("API Response:", response);
+  
+      if (response.success) {
+        alert("เพิ่มตัวละครสำเร็จ!");
+        console.log("Character added successfully.");
+        this.setState({ uploadedFile: null, base64Image: null, characterName: "" });
+      } else {
+        console.warn("Add character failed:", response.message || "Unknown error");
+        alert("ไม่สามารถเพิ่มตัวละครได้");
+      }
+    } catch (error) {
+      console.error("Error adding character:", error);
+      alert("Failed to submit. Please try again.");
+    }
+  };
+  
+  
   GetPatch = async () => {
     const config = {
       headers: {
