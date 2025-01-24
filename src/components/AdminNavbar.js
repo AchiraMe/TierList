@@ -19,13 +19,16 @@ class AdminNavbar extends Component {
         const data = await new Service().getuserinfo(token);
         this.setState({ username: data.username });
       } catch (error) {
-        console.error("Failed to fetch user info:", error);
+        console.error("Token is invalid or expired:", error);
+        Cookies.remove("token"); // ลบ token ที่หมดอายุ
+        this.props.router.navigate("/admin"); // เปลี่ยนเส้นทางกลับไปหน้า admin
       }
     } else {
       console.error("No token found in cookies.");
       this.props.router.navigate("/admin");
     }
   }
+  
 
   handleLogout = () => {
     Cookies.remove("isLoggedIn");

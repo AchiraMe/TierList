@@ -64,7 +64,7 @@ export default class Tierlist extends Component {
 
         alert("Patch submitted successfully!");
 
-        this.setState({ patch: "" }); 
+        this.setState({ patch: "" });
       } catch (error) {
         alert("Failed to submit patch. Please try again.");
       }
@@ -72,20 +72,16 @@ export default class Tierlist extends Component {
       alert("Please fill in all required fields.");
     }
   };
-  Addcharacters = async ( base64Image, characterName) => {
+  Addcharacters = async (base64Image, characterName) => {
+    const { token } = this.state;
     try {
-      console.log("Starting Addcharacters function...");
-      console.log("Base64 Image:", base64Image ? base64Image.substring(0, 50) + "..." : "No Image"); // แสดงแค่ส่วนต้นของ Base64
-      console.log("Character Name:", characterName);
-  
-      const response = await new Service().Addcharacters(base64Image, characterName);
-  
-      console.log("API Response:", response);
-  
+      const response = await new Service().Addcharacters(token, base64Image, characterName);
+
       if (response.success) {
         alert("เพิ่มตัวละครสำเร็จ!");
         console.log("Character added successfully.");
         this.setState({ uploadedFile: null, base64Image: null, characterName: "" });
+        this.getcharacters();
       } else {
         console.warn("Add character failed:", response.message || "Unknown error");
         alert("ไม่สามารถเพิ่มตัวละครได้");
@@ -95,7 +91,7 @@ export default class Tierlist extends Component {
       alert("Failed to submit. Please try again.");
     }
   };
-  
+
 
   changeTabS = (tabNumber) => {
     this.setState({ activeTabS: tabNumber });
@@ -140,11 +136,11 @@ export default class Tierlist extends Component {
       alert("กรุณาอัปโหลดรูปก่อนยืนยัน");
       return;
     }
-  
+
     // เรียกใช้ Addcharacters
     this.Addcharacters(base64Image, characterName);
   };
-  
+
 
 
   render() {
@@ -184,6 +180,27 @@ export default class Tierlist extends Component {
             color: white;
             border-color: #007bff;
           }
+          .hexagon-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 150px;
+          height: 150px;
+          background: #007bff;
+          color: white;
+          font-weight: bold;
+          text-align: center;
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+          transition: transform 0.2s, background-color 0.2s;
+          cursor: pointer;
+        }
+        .hexagon-button:hover {
+          background: #0056b3;
+          transform: scale(1.05);
+        }
+        .hexagon-button span {
+          pointer-events: none; /* Prevents text selection inside the button */
+        }
         `}</style>
 
         <div className="layout-wrapper">
@@ -270,20 +287,66 @@ export default class Tierlist extends Component {
                             <div style={{ marginTop: "20px" }}>
                               {/* Tab 1 Content */}
                               {activeTabS === 1 && (
-                                <div>
-                                  <p>เนื้อหาของ Tab 1 ใน S Tier</p>
-                                  <Button variant="primary" onClick={this.handleModalShow}>
-                                    เปิด Modal
-                                  </Button>
+                                <div className="row mt-3 align-items-center">
+                                  {/* รูปภาพหกเหลี่ยม */}
+                                  <div className="col-6 col-md-3">
+                                    <div
+                                      className="hexagon-button"
+                                      onClick={this.handleModalShow}
+                                      style={{
+                                        backgroundImage: this.state.selectedOption
+                                          ? `url(data:image/png;base64,${this.state.dataX.find(
+                                            (character) => character.name === this.state.selectedOption
+                                          )?.img})`
+                                          : "none",
+                                        backgroundColor: this.state.selectedOption ? "transparent" : "#ccc",
+                                        backgroundSize: "cover",
+                                        backgroundPosition: "center",
+                                        width: "150px",
+                                        height: "150px",
+                                        clipPath:
+                                          "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                                        position: "relative",
+                                        border: "2px solid #fff",
+                                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                      }}
+                                    >
+                                      <span>{this.state.selectedOption ? "" : "เลือกตัวละคร"}</span>
+                                    </div>
+                                    {this.state.selectedOption && (
+                                      <p
+                                        style={{
+                                          marginTop: "10px",
+                                          fontSize: "16px",
+                                          fontWeight: "bold",
+                                          color: "black",
+                                          textAlign: "left", // จัดตรงกลางใต้รูป
+                                        }}
+                                      >
+                                        {this.state.selectedOption}
+                                      </p>
+                                    )}
+                                  </div>
 
-
-                                  {/* แสดงค่าที่เลือก */}
-                                  {this.state.selectedOption && (
-                                    <p style={{ marginTop: "20px" }}>
-                                      คุณเลือก: <strong>{this.state.selectedOption}</strong>
-                                    </p>
-                                  )}
+                                  {/* Textarea */}
+                                  <div className="col-6 col-md-8">
+                                    <p>เงื่อนไขการเล่น:</p>
+                                    <textarea
+                                      className="form-control"
+                                      rows="4"
+                                      placeholder="กรอกเงื่อนไขที่นี่..."
+                                      style={{
+                                        resize: "none", // ปิดการย่อขยาย
+                                        border: "1px solid #ccc",
+                                        borderRadius: "5px",
+                                        
+                                      }}
+                                      value={this.state.conditionText || ""}
+                                      onChange={(e) => this.setState({ conditionText: e.target.value })}
+                                    ></textarea>
+                                  </div>
                                 </div>
+
                               )}
 
                               {activeTabS === 2 && <p>เนื้อหาของ Tab 2 ใน S Tier</p>}

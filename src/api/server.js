@@ -83,28 +83,25 @@ export default class Service {
       throw error;
     }
   };
-  Addcharacters = async (token, base64Image, characterName) => {
+  Addcharacters = async (token, base64Image,characterName) => {
+    const config = {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  
+    const formData = new URLSearchParams();
+    formData.append("base64Image", base64Image);
+    formData.append("characterName", characterName);
+
     try {
-      console.log("Starting Addcharacters function...");
-      console.log("Token:", token);
-      console.log("Base64 Image:", base64Image ? base64Image.substring(0, 50) + "..." : "No Image"); // แสดงแค่ส่วนต้นของ Base64
-      console.log("Character Name:", characterName);
-  
-      const response = await new Service().Addcharacters(token, base64Image, characterName);
-  
-      console.log("API Response:", response);
-  
-      if (response.success) {
-        alert("เพิ่มตัวละครสำเร็จ!");
-        console.log("Character added successfully.");
-        this.setState({ uploadedFile: null, base64Image: null, characterName: "" });
-      } else {
-        console.warn("Add character failed:", response.message || "Unknown error");
-        alert("ไม่สามารถเพิ่มตัวละครได้");
-      }
+      const response = await axios.post(`${BASE_URL}/Addcharacters`, formData, config);
+      return response.data;
     } catch (error) {
-      console.error("Error adding character:", error);
-      alert("Failed to submit. Please try again.");
+      console.error("Error in Addcharacters:", error);
+      throw error;
     }
   };
   
