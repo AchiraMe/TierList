@@ -18,6 +18,10 @@ export default class Tierlist extends Component {
       isContentVisibleA: true,
       showModal: false,
       characterName: "",
+      grid: Array(3)
+        .fill(null)
+        .map(() => Array(3).fill(null)), // 3x3 grid
+      draggedImage: null,
     };
     this.fileInputRef = React.createRef();
 
@@ -140,11 +144,25 @@ export default class Tierlist extends Component {
     // เรียกใช้ Addcharacters
     this.Addcharacters(base64Image, characterName);
   };
+  handleDragStart = (imgSrc) => {
+    this.setState({ draggedImage: imgSrc });
+  };
+  handleDrop = (row, col) => {
+    const { grid, draggedImage } = this.state;
+    if (!draggedImage) return;
 
+    const newGrid = [...grid];
+    newGrid[row][col] = draggedImage;
+    this.setState({ grid: newGrid, draggedImage: null });
+  };
+
+  handleDragOver = (e) => {
+    e.preventDefault(); // อนุญาตการวางรูปในพื้นที่นี้
+  };
 
 
   render() {
-    const { token, activeTabS, activeTabA, isContentVisibleS, isContentVisibleA } = this.state;
+    const { token, activeTabS, activeTabA, isContentVisibleS, isContentVisibleA, grid } = this.state;
 
     if (!token) {
       return <Navigate to="/admin" />;
@@ -201,6 +219,48 @@ export default class Tierlist extends Component {
         .hexagon-button span {
           pointer-events: none; /* Prevents text selection inside the button */
         }
+        .hex-grid {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px; /* ระยะห่างระหว่างแถว */
+        }
+
+        .hex-row {
+          display: flex;
+          justify-content: center;
+          gap: 10px; /* ระยะห่างระหว่างแต่ละหกเหลี่ยม */
+        }
+
+        .hex-row:nth-child(odd) {
+          margin-left: 75px; /* ขยับแถวเพื่อให้ซ้อนกัน */
+        }
+
+        .hex-cell {
+          width: 100px;
+          height: 100px;
+          background-color: #ccc; /* สีพื้นฐานของช่อง */
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px dashed #aaa;
+          transition: background 0.3s ease;
+          position: relative;
+        }
+
+        .hex-cell:hover {
+          border-color: #6d28d9;
+          cursor: pointer;
+        }
+
+        .hex-cell span {
+          pointer-events: none; /* ป้องกันการเลือกข้อความ */
+          color: #555;
+          font-size: 14px;
+          font-weight: bold;
+        }
+
         `}</style>
 
         <div className="layout-wrapper">
@@ -320,7 +380,7 @@ export default class Tierlist extends Component {
                                           fontSize: "16px",
                                           fontWeight: "bold",
                                           color: "black",
-                                          textAlign: "left", // จัดตรงกลางใต้รูป
+                                          textAlign: "left",
                                         }}
                                       >
                                         {this.state.selectedOption}
@@ -336,18 +396,61 @@ export default class Tierlist extends Component {
                                       rows="4"
                                       placeholder="กรอกเงื่อนไขที่นี่..."
                                       style={{
-                                        resize: "none", // ปิดการย่อขยาย
+                                        resize: "none",
                                         border: "1px solid #ccc",
                                         borderRadius: "5px",
-                                        
                                       }}
                                       value={this.state.conditionText || ""}
                                       onChange={(e) => this.setState({ conditionText: e.target.value })}
                                     ></textarea>
                                   </div>
-                                </div>
 
+                                  <div className="hex-grid">
+                                    {this.state.grid.map((row, rowIndex) => (
+                                      <div key={rowIndex} className="hex-row">
+                                        {row.map((cell, colIndex) => (
+                                          <div
+                                            key={`${rowIndex}-${colIndex}`}
+                                            className="hex-cell"
+                                            onDragOver={this.handleDragOver}
+                                            onDrop={() => this.handleDrop(rowIndex, colIndex)}
+                                            style={{
+                                              background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                            }}
+                                          >
+                                            {!cell && <span>Drop Here</span>}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  {/* รูปภาพสำหรับลาก */}
+                                  <div style={{ marginTop: "20px", padding: "10px", width: "100%" }}>
+                                    <h5>รูปภาพที่สามารถลากไปวาง:</h5>
+                                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                                      {this.state.dataX.map((character, index) => (
+                                        <img
+                                          key={index}
+                                          src={`data:image/png;base64,${character.img}`} // รูปภาพ Base64
+                                          alt={character.name}
+                                          draggable
+                                          onDragStart={() => this.handleDragStart(`data:image/png;base64,${character.img}`)}
+                                          style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "5px",
+                                            cursor: "grab",
+                                          }}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
                               )}
+
 
                               {activeTabS === 2 && <p>เนื้อหาของ Tab 2 ใน S Tier</p>}
                               {activeTabS === 3 && <p>เนื้อหาของ Tab 3 ใน S Tier</p>}
