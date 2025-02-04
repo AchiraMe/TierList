@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Nav } from "react-bootstrap";
+import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import Cookies from "js-cookie";
-import withRouter from "../hoc/withRouter"; // นำเข้า HOC
-import Service from "../api/server"; // นำเข้า Service
+import withRouter from "../hoc/withRouter";
+import Service from "../api/server";
 
 class AdminNavbar extends Component {
   constructor(props) {
@@ -20,15 +20,14 @@ class AdminNavbar extends Component {
         this.setState({ username: data.username });
       } catch (error) {
         console.error("Token is invalid or expired:", error);
-        Cookies.remove("token"); // ลบ token ที่หมดอายุ
-        this.props.router.navigate("/admin"); // เปลี่ยนเส้นทางกลับไปหน้า admin
+        Cookies.remove("token");
+        this.props.router.navigate("/admin");
       }
     } else {
       console.error("No token found in cookies.");
       this.props.router.navigate("/admin");
     }
   }
-  
 
   handleLogout = () => {
     Cookies.remove("isLoggedIn");
@@ -40,41 +39,27 @@ class AdminNavbar extends Component {
     const { username } = this.state;
 
     return (
-      <div
-        style={{
-          width: "250px",
-          height: "100vh",
-          backgroundColor: "#343a40",
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          padding: "15px",
-        }}
-      >
-        <h4 style={{ textAlign: "center", color: "#fff" }}>Admin Panel</h4>
-        <p style={{ textAlign: "center", color: "#fff" }}>
-          {username ? `Welcome, ${username}` : ""}
-        </p>
-
-        <Nav className="flex-column">
-          <Nav.Link href="/manager" style={{ color: "#fff" }}>
-            Dashboard
-          </Nav.Link>
-          <Nav.Link href="/tierlist" style={{ color: "#fff" }}>
-            Tier list
-          </Nav.Link>
-          <Nav.Link href="#" style={{ color: "#fff" }}>
-            Reports
-          </Nav.Link>
-          <Nav.Link
-            href="#"
-            style={{ color: "#fff" }}
-            onClick={this.handleLogout}
-          >
-            Logout
-          </Nav.Link>
-        </Nav>
-      </div>
+      <Navbar bg="dark" variant="dark" expand="lg" fixed="top">
+        <Container>
+          <Navbar.Brand href="/manager">Admin Panel</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link href="/manager">Dashboard</Nav.Link>
+              <Nav.Link href="/tierlist">Tier list</Nav.Link>
+              <Nav.Link href="#">Reports</Nav.Link>
+            </Nav>
+            <Nav>
+              <Navbar.Text style={{ marginRight: "15px", color: "#fff" }}>
+                {username ? `Welcome, ${username}` : ""}
+              </Navbar.Text>
+              <Button variant="outline-light" onClick={this.handleLogout}>
+                Logout
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
     );
   }
 }

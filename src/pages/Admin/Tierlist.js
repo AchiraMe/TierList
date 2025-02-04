@@ -20,7 +20,7 @@ export default class Tierlist extends Component {
       characterName: "",
       grid: Array(3)
         .fill(null)
-        .map(() => Array(3).fill(null)), // 3x3 grid
+        .map(() => Array(7).fill(null)), // 3x3 grid
       draggedImage: null,
     };
     this.fileInputRef = React.createRef();
@@ -144,20 +144,34 @@ export default class Tierlist extends Component {
     // เรียกใช้ Addcharacters
     this.Addcharacters(base64Image, characterName);
   };
-  handleDragStart = (imgSrc) => {
-    this.setState({ draggedImage: imgSrc });
+  handleDragStart = (imgSrc, row = null, col = null) => {
+    this.setState({ draggedImage: imgSrc, draggedFrom: row !== null ? { row, col } : null });
   };
+
   handleDrop = (row, col) => {
-    const { grid, draggedImage } = this.state;
+    const { grid, draggedImage, draggedFrom } = this.state;
     if (!draggedImage) return;
 
-    const newGrid = [...grid];
+    const newGrid = [...grid.map((r) => [...r])]; // Clone grid
+
+    // ล้างตำแหน่งเก่า (ถ้าเป็นการย้ายภายในตาราง)
+    if (draggedFrom) {
+      newGrid[draggedFrom.row][draggedFrom.col] = null;
+    }
+
+    // วางรูปในตำแหน่งใหม่
     newGrid[row][col] = draggedImage;
-    this.setState({ grid: newGrid, draggedImage: null });
+
+    this.setState({ grid: newGrid, draggedImage: null, draggedFrom: null });
   };
+
 
   handleDragOver = (e) => {
     e.preventDefault(); // อนุญาตการวางรูปในพื้นที่นี้
+  };
+  handleRightClick = (event, row, col) => {
+    event.preventDefault(); // ป้องกัน Context Menu ของเบราว์เซอร์
+    alert(`คลิกขวาที่ช่อง: แถว ${row + 1}, คอลัมน์ ${col + 1}`);
   };
 
 
@@ -265,11 +279,10 @@ export default class Tierlist extends Component {
 
         <div className="layout-wrapper">
           {/* Sidebar */}
-          <div className="sidebar">
-            <AdminNavbar />
-          </div>
+          <AdminNavbar />
+
           {/* Main Content */}
-          <div className="main-content">
+          <div className="main-content mt-5">
             <div className="card mt-2" id="container">
               <div className="card-body">
                 <div className="row col-12 m-auto">
@@ -348,8 +361,7 @@ export default class Tierlist extends Component {
                               {/* Tab 1 Content */}
                               {activeTabS === 1 && (
                                 <div className="row mt-3 align-items-center">
-                                  {/* รูปภาพหกเหลี่ยม */}
-                                  <div className="col-6 col-md-3">
+                                  <div className="col-12 col-md-1">
                                     <div
                                       className="hexagon-button"
                                       onClick={this.handleModalShow}
@@ -389,11 +401,11 @@ export default class Tierlist extends Component {
                                   </div>
 
                                   {/* Textarea */}
-                                  <div className="col-6 col-md-8">
+                                  <div className="col-6 col-md-4">
                                     <p>เงื่อนไขการเล่น:</p>
                                     <textarea
                                       className="form-control"
-                                      rows="4"
+                                      rows="2"
                                       placeholder="กรอกเงื่อนไขที่นี่..."
                                       style={{
                                         resize: "none",
@@ -404,50 +416,109 @@ export default class Tierlist extends Component {
                                       onChange={(e) => this.setState({ conditionText: e.target.value })}
                                     ></textarea>
                                   </div>
+                                  <div className="row mt-3 align-items-center">
+                                    {/* Card 1 (ซ้าย) */}
+                                    <div className="col-3">
+                                      <div className="card shadow-sm text-center">
+                                        <div className="card-body">
+                                          {/* รูปภาพสำหรับลาก */}
+                                          <div style={{ marginTop: "20px", padding: "10px", width: "100%" }}>
+                                            <h5>Character</h5>
+                                            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                                              {this.state.dataX.map((character, index) => (
+                                                <img
+                                                  key={index}
+                                                  src={`data:image/png;base64,${character.img}`} // รูปภาพ Base64
+                                                  alt={character.name}
+                                                  draggable
+                                                  onDragStart={() => this.handleDragStart(`data:image/png;base64,${character.img}`)}
+                                                  style={{
+                                                    width: "80px",
+                                                    height: "80px",
+                                                    objectFit: "cover",
+                                                    border: "1px solid #ccc",
+                                                    borderRadius: "5px",
+                                                    cursor: "grab",
+                                                  }}
+                                                />
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
 
-                                  <div className="hex-grid">
-                                    {this.state.grid.map((row, rowIndex) => (
-                                      <div key={rowIndex} className="hex-row">
-                                        {row.map((cell, colIndex) => (
-                                          <div
-                                            key={`${rowIndex}-${colIndex}`}
-                                            className="hex-cell"
-                                            onDragOver={this.handleDragOver}
-                                            onDrop={() => this.handleDrop(rowIndex, colIndex)}
-                                            style={{
-                                              background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
-                                            }}
-                                          >
-                                            {!cell && <span>Drop Here</span>}
+                                    {/* Card 2 (กลาง) */}
+                                    <div className="col-6">
+                                      <div className="card shadow-sm text-center">
+                                        <div className="card-body">
+                                          <div className="hex-grid p-3">
+                                            {this.state.grid.map((row, rowIndex) => (
+                                              <div key={rowIndex} className="hex-row">
+                                                {row.map((cell, colIndex) => (
+                                                  <div
+                                                    key={`${rowIndex}-${colIndex}`}
+                                                    className="hex-cell"
+                                                    onDragOver={this.handleDragOver}
+                                                    onDrop={() => this.handleDrop(rowIndex, colIndex)}
+                                                    onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
+                                                    draggable={!!cell} // ทำให้ลากได้ถ้ามีรูป
+                                                    onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex)}
+                                                    style={{
+                                                      background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                                    }}
+                                                  >
+                                                    {!cell && <span>Drop Here</span>}
+                                                  </div>
+
+                                                ))}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+
+                                    {/* Card 3 (ขวา) */}
+                                    <div className="col-3">
+                                      <div className="card shadow-sm text-center">
+                                        <div className="card-body">
+                                          <h5 className="card-title">Card 3</h5>
+                                          <p className="card-text">รายละเอียดของการ์ดที่ 3</p>
+                                          <button className="btn btn-primary">เพิ่มเติม</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+
+                                  <div className="row mt-3 align-items-center">
+
+                                    {/* <div className="col-6 col-md-3">
+                                      <div className="hex-grid">
+                                        {this.state.grid.map((row, rowIndex) => (
+                                          <div key={rowIndex} className="hex-row">
+                                            {row.map((cell, colIndex) => (
+                                              <div
+                                                key={`${rowIndex}-${colIndex}`}
+                                                className="hex-cell"
+                                                onDragOver={this.handleDragOver}
+                                                onDrop={() => this.handleDrop(rowIndex, colIndex)}
+                                                style={{
+                                                  background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                                }}
+                                              >
+                                                {!cell && <span>Drop Here</span>}
+                                              </div>
+                                            ))}
                                           </div>
                                         ))}
                                       </div>
-                                    ))}
+                                    </div> */}
                                   </div>
 
-                                  {/* รูปภาพสำหรับลาก */}
-                                  <div style={{ marginTop: "20px", padding: "10px", width: "100%" }}>
-                                    <h5>รูปภาพที่สามารถลากไปวาง:</h5>
-                                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                                      {this.state.dataX.map((character, index) => (
-                                        <img
-                                          key={index}
-                                          src={`data:image/png;base64,${character.img}`} // รูปภาพ Base64
-                                          alt={character.name}
-                                          draggable
-                                          onDragStart={() => this.handleDragStart(`data:image/png;base64,${character.img}`)}
-                                          style={{
-                                            width: "100px",
-                                            height: "100px",
-                                            objectFit: "cover",
-                                            border: "1px solid #ccc",
-                                            borderRadius: "5px",
-                                            cursor: "grab",
-                                          }}
-                                        />
-                                      ))}
-                                    </div>
-                                  </div>
+
                                 </div>
                               )}
 
