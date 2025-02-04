@@ -22,6 +22,8 @@ export default class Tierlist extends Component {
         .fill(null)
         .map(() => Array(7).fill(null)), // 3x3 grid
       draggedImage: null,
+      isDragging: false,
+      isDraggingFromGrid: false,
     };
     this.fileInputRef = React.createRef();
 
@@ -144,10 +146,18 @@ export default class Tierlist extends Component {
     // เรียกใช้ Addcharacters
     this.Addcharacters(base64Image, characterName);
   };
-  handleDragStart = (imgSrc, row = null, col = null) => {
-    this.setState({ draggedImage: imgSrc, draggedFrom: row !== null ? { row, col } : null });
+  handleDragStart = (imgSrc, row = null, col = null, fromGrid = false) => {
+    this.setState({
+      draggedImage: imgSrc,
+      draggedFrom: row !== null ? { row, col } : null,
+      isDragging: true,
+      isDraggingFromGrid: fromGrid // ระบุว่ามาจาก Grid หรือไม่
+    });
   };
 
+  handleDragEnd = () => {
+    this.setState({ isDragging: false });
+  };
   handleDrop = (row, col) => {
     const { grid, draggedImage, draggedFrom } = this.state;
     if (!draggedImage) return;
@@ -172,6 +182,15 @@ export default class Tierlist extends Component {
   handleRightClick = (event, row, col) => {
     event.preventDefault(); // ป้องกัน Context Menu ของเบราว์เซอร์
     alert(`คลิกขวาที่ช่อง: แถว ${row + 1}, คอลัมน์ ${col + 1}`);
+  };
+  handleDeleteDrop = () => {
+    const { grid, draggedFrom } = this.state;
+    if (!draggedFrom) return;
+
+    const newGrid = [...grid.map((r) => [...r])]; // Clone grid
+    newGrid[draggedFrom.row][draggedFrom.col] = null; // ลบรูปในตำแหน่งที่ลากออกมา
+
+    this.setState({ grid: newGrid, draggedImage: null, draggedFrom: null });
   };
 
 
@@ -274,6 +293,54 @@ export default class Tierlist extends Component {
           font-size: 14px;
           font-weight: bold;
         }
+        ///
+.trash-card {
+  width: 100%;
+  max-width: 400px; /* จำกัดขนาด Card */
+  margin: 20px auto; /* จัดให้อยู่ตรงกลาง */
+  border: 2px solid #a94442; /* ขอบสีแดง */
+  background-color: #2b0d0d; /* สีพื้นหลังของ Card */
+  border-radius: 12px; /* ทำให้มุมโค้งมน */
+}
+
+.trash-zone {
+  width: 100%;
+  min-height: 120px;
+  background-color: #2b0d0d; /* สีแดงเข้ม */
+  color: #a94442;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 4px dashed rgba(169, 68, 66, 0.8); /* เส้นประ */
+  padding: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.trash-zone:hover {
+  background-color: #4d1414;
+  transform: scale(1.05);
+}
+
+.trash-icon {
+  font-size: 30px;
+  color: #a94442;
+}
+
+.trash-text {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #fff;
+}
+
+
+
+
 
         `}</style>
 
@@ -416,7 +483,16 @@ export default class Tierlist extends Component {
                                       onChange={(e) => this.setState({ conditionText: e.target.value })}
                                     ></textarea>
                                   </div>
-                                  <div className="row mt-3 align-items-center">
+                                  <div className="row mt-3">
+                                    <div className="col-12">
+                                      <div className="card shadow-sm text-center">
+                                        <div className="card-body">
+
+                                        </div>
+                                      </div>
+                                    </div>  
+                                  </div>
+                                  <div className="row mt-3">
                                     {/* Card 1 (ซ้าย) */}
                                     <div className="col-3">
                                       <div className="card shadow-sm text-center">
@@ -428,10 +504,10 @@ export default class Tierlist extends Component {
                                               {this.state.dataX.map((character, index) => (
                                                 <img
                                                   key={index}
-                                                  src={`data:image/png;base64,${character.img}`} // รูปภาพ Base64
+                                                  src={`data:image/png;base64,${character.img}`}
                                                   alt={character.name}
                                                   draggable
-                                                  onDragStart={() => this.handleDragStart(`data:image/png;base64,${character.img}`)}
+                                                  onDragStart={() => this.handleDragStart(`data:image/png;base64,${character.img}`, null, null, false)}
                                                   style={{
                                                     width: "80px",
                                                     height: "80px",
@@ -442,6 +518,7 @@ export default class Tierlist extends Component {
                                                   }}
                                                 />
                                               ))}
+
                                             </div>
                                           </div>
                                         </div>
@@ -458,12 +535,13 @@ export default class Tierlist extends Component {
                                                 {row.map((cell, colIndex) => (
                                                   <div
                                                     key={`${rowIndex}-${colIndex}`}
-                                                    className="hex-cell"
+                                                    className={`hex-cell ${this.state.isDragging}`}
                                                     onDragOver={this.handleDragOver}
                                                     onDrop={() => this.handleDrop(rowIndex, colIndex)}
+                                                    onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
                                                     onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
-                                                    draggable={!!cell} // ทำให้ลากได้ถ้ามีรูป
-                                                    onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex)}
+                                                    draggable={!!cell}
+                                                    onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
                                                     style={{
                                                       background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
                                                     }}
@@ -471,10 +549,30 @@ export default class Tierlist extends Component {
                                                     {!cell && <span>Drop Here</span>}
                                                   </div>
 
+
+
                                                 ))}
                                               </div>
                                             ))}
                                           </div>
+                                          {this.state.isDragging && this.state.isDraggingFromGrid && (
+                                            <div className="card shadow-sm trash-card">
+                                              <div className="card-body text-center">
+                                                <div
+                                                  className="trash-zone"
+                                                  onDragOver={this.handleDragOver}
+                                                  onDrop={this.handleDeleteDrop}
+                                                >
+                                                  <i className="fas fa-trash-alt trash-icon"></i>
+                                                  <p className="trash-text">ลากรูปมาวางที่นี่เพื่อลบ</p>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )}
+
+
+
+
                                         </div>
                                       </div>
                                     </div>
@@ -624,27 +722,6 @@ export default class Tierlist extends Component {
                     </div>
                   ))}
 
-                  {/* ช่อง "เพิ่มรูป" */}
-                  <div
-                    style={{
-                      cursor: "pointer",
-                      textAlign: "center",
-                      border: "2px dashed #007bff",
-                      borderRadius: "5px",
-                      padding: "10px",
-                      width: "100px",
-                      height: "130px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      color: "#007bff",
-                    }}
-                    onClick={() => this.fileInputRef.current.click()} // เปิด input file เมื่อคลิก
-                  >
-                    <p style={{ fontSize: "16px", fontWeight: "bold" }}>เพิ่มรูป</p>
-                    <span style={{ fontSize: "12px", color: "#555" }}>คลิกเพื่อเพิ่มรูป</span>
-                  </div>
                   <input
                     type="file"
                     accept="image/png"

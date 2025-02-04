@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Admin from "./pages/Admin/Admin";
 import Manager from "./pages/Admin/Manager";
 import Tierlist from "./pages/Admin/Tierlist";
+import Character from "./pages/Admin/Character";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/admin" element={<Admin />} />
         <Route path="/manager" element={<Manager />} />
         <Route path="/tierlist" element={<Tierlist />} />
+        <Route path="/character" element={<Character />} />
         <Route
           path="/manager"
           element={
@@ -31,6 +33,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Tierlist />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/character"
+          element={
+            <ProtectedRoute>
+              <Character />
             </ProtectedRoute>
           }
         />

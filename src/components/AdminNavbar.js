@@ -47,7 +47,7 @@ class AdminNavbar extends Component {
             <Nav className="me-auto">
               <Nav.Link href="/manager">Dashboard</Nav.Link>
               <Nav.Link href="/tierlist">Tier list</Nav.Link>
-              <Nav.Link href="#">Reports</Nav.Link>
+              <Nav.Link href="/character">Character</Nav.Link>
             </Nav>
             <Nav>
               <Navbar.Text style={{ marginRight: "15px", color: "#fff" }}>
