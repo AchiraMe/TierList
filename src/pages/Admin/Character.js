@@ -142,13 +142,6 @@ export default class Character extends Component {
                                                     alt="Preview"
                                                     className="uploaded-image"
                                                 />
-
-                                                {/* กรอบรูปจาก public */}
-                                                <img
-                                                    src="frame/Subtract.png" // ต้องมีไฟล์ frame.png อยู่ใน public/
-                                                    alt="Frame"
-                                                    className="frame-overlay"
-                                                />
                                             </div>
                                         )}
                                     </Form.Group>
