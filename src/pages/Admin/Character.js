@@ -164,41 +164,394 @@ export default class Character extends Component {
                                             required
                                         />
                                     </Form.Group>
-
+                                    <Form.Group>
+                                        <Form.Label>ระยะโจมตี</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={this.state.distance}
+                                            onChange={(e) => this.setState({ distance: e.target.value })}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>ราคา</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={this.state.price}
+                                            onChange={(e) => this.setState({ price: e.target.value })}
+                                        />
+                                    </Form.Group>
                                     {/* Trait 1 */}
                                     <Form.Group>
-                                        <Form.Label>Trait 1</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            value={this.state.trait1Name}
-                                            onChange={(e) => this.setState({ trait1Name: e.target.value })}
-                                        />
-                                        <Form.Control type="file" accept="image/*" onChange={(e) => this.handleTraitImageChange(e, "trait1Img")} />
-                                        {this.state.trait1Img && <img src={this.state.trait1Img} alt="Trait 1" width="100" className="mt-2" />}
-                                    </Form.Group>
+                                        <div className="row mt-3">
 
-                                    {/* Trait 2 */}
-                                    <Form.Group>
-                                        <Form.Label>Trait 2</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            value={this.state.trait2Name}
-                                            onChange={(e) => this.setState({ trait2Name: e.target.value })}
-                                        />
-                                        <Form.Control type="file" accept="image/*" onChange={(e) => this.handleTraitImageChange(e, "trait2Img")} />
-                                        {this.state.trait2Img && <img src={this.state.trait2Img} alt="Trait 2" width="100" className="mt-2" />}
-                                    </Form.Group>
+                                            <div className="col-3">
+                                                <Form.Label>Trait 1</Form.Label>
+                                                {!this.state.trait1Img && (
+                                                    <div
+                                                        className="border rounded d-flex align-items-center justify-content-center"
+                                                        style={{ width: "80px", height: "80px", cursor: "pointer", backgroundColor: "#f8f9fa" }}
+                                                        onClick={() => this.setState({ showTrait1Options: true })}
+                                                    >
+                                                        <span style={{ fontSize: "12px", color: "#6c757d" }}>เลือก Trait</span>
+                                                    </div>
+                                                )}
+                                                {this.state.trait1Img && (
+                                                    <div>
+                                                        <img
+                                                            src={this.state.trait1Img}
+                                                            alt={this.state.trait1ImgName}
+                                                            width="80"
+                                                            height="80"
+                                                            className="border rounded"
+                                                            style={{ cursor: "pointer" }}
+                                                            onClick={() => this.setState({ showTrait1Options: true })}
+                                                        />
+                                                        <p className="mt-1">{this.state.trait1ImgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="col-3">
+                                                <Form.Label>Trait 2</Form.Label>
 
-                                    {/* Trait 3 */}
-                                    <Form.Group>
-                                        <Form.Label>Trait 3</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            value={this.state.trait3Name}
-                                            onChange={(e) => this.setState({ trait3Name: e.target.value })}
-                                        />
-                                        <Form.Control type="file" accept="image/*" onChange={(e) => this.handleTraitImageChange(e, "trait3Img")} />
-                                        {this.state.trait3Img && <img src={this.state.trait3Img} alt="Trait 3" width="100" className="mt-2" />}
+                                                {!this.state.trait2Img && (
+                                                    <div
+                                                        className="border rounded d-flex align-items-center justify-content-center"
+                                                        style={{ width: "80px", height: "80px", cursor: "pointer", backgroundColor: "#f8f9fa" }}
+                                                        onClick={() => this.setState({ showTrait2Options: true })}
+                                                    >
+                                                        <span style={{ fontSize: "12px", color: "#6c757d" }}>เลือก Trait</span>
+                                                    </div>
+                                                )}
+                                                {this.state.trait2Img && (
+                                                    <div >
+                                                        <img
+                                                            src={this.state.trait2Img}
+                                                            alt={this.state.trait2ImgName}
+                                                            width="80"
+                                                            height="80"
+                                                            className="border rounded"
+                                                            style={{ cursor: "pointer" }}
+                                                            onClick={() => this.setState({ showTrait2Options: true })}
+                                                        />
+                                                        <p className="mt-1">{this.state.trait2ImgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="col-3">
+                                                <Form.Label>Trait 3</Form.Label>
+                                                {!this.state.trait3Img && (
+                                                    <div
+                                                        className="border rounded d-flex align-items-center justify-content-center"
+                                                        style={{ width: "80px", height: "80px", cursor: "pointer", backgroundColor: "#f8f9fa" }}
+                                                        onClick={() => this.setState({ showTrait3Options: true })}
+                                                    >
+                                                        <span style={{ fontSize: "12px", color: "#6c757d" }}>เลือก Trait</span>
+                                                    </div>
+                                                )}
+                                                {this.state.trait3Img && (
+                                                    <div className="mt-2">
+                                                        <img
+                                                            src={this.state.trait3Img}
+                                                            alt={this.state.trait3ImgName}
+                                                            width="80"
+                                                            height="80"
+                                                            className="border rounded"
+                                                            style={{ cursor: "pointer" }}
+                                                            onClick={() => this.setState({ showTrait3Options: true })}
+                                                        />
+                                                        <p className="mt-1">{this.state.trait3ImgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="col-3">
+                                                <Form.Label>Trait 4</Form.Label>
+                                                {!this.state.trait4Img && (
+                                                    <div
+                                                        className="border rounded d-flex align-items-center justify-content-center"
+                                                        style={{ width: "80px", height: "80px", cursor: "pointer", backgroundColor: "#f8f9fa" }}
+                                                        onClick={() => this.setState({ showTrait4Options: true })}
+                                                    >
+                                                        <span style={{ fontSize: "12px", color: "#6c757d" }}>เลือก Trait</span>
+                                                    </div>
+                                                )}
+                                                {this.state.trait4Img && (
+                                                    <div className="mt-2">
+                                                        <img
+                                                            src={this.state.trait4Img}
+                                                            alt={this.state.trait4ImgName}
+                                                            width="80"
+                                                            height="80"
+                                                            className="border rounded"
+                                                            style={{ cursor: "pointer" }}
+                                                            onClick={() => this.setState({ showTrait4Options: true })}
+                                                        />
+                                                        <p className="mt-1">{this.state.trait4ImgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                        {/* Card ครอบรายการรูป */}
+                                        {this.state.showTrait1Options && (
+                                            <div className="card mt-3">
+                                                <div className="card-body">
+                                                    <Form.Control
+                                                        type="text"
+                                                        placeholder="ค้นหา Trait..."
+                                                        className="mb-2"
+                                                        onChange={(e) => this.setState({ traitSearch: e.target.value.toLowerCase() })}
+                                                    />
+
+                                                    <div className="d-flex flex-wrap">
+                                                        {[
+                                                            "Academy.png",
+                                                            "Ambassador.png",
+                                                            "Ambusher.png",
+                                                            "BloodHunter.png",
+                                                            "Bruiser.png",
+                                                            "Cabal.png",
+                                                            "Challenger.png",
+                                                            "Crime.png",
+                                                            "Experiment.png",
+                                                            "Family.png",
+                                                            "FormSwapper.png",
+                                                            "Hextech.png",
+                                                            "HighRoller.png",
+                                                            "Hoverboard.png",
+                                                            "Infused.png",
+                                                            "Invoker.png",
+                                                            "JunkerKing.png",
+                                                            "MachineHerald.png",
+                                                            "Martialist.png",
+                                                            "MissMageTrait.png",
+                                                            "Pugilist.png",
+                                                            "Rebel.png",
+                                                            "Scrap.png",
+                                                            "Sniper.png",
+                                                            "Sorcerer.png",
+                                                            "Squad.png",
+                                                            "Titan.png",
+                                                            "Warband.png",
+                                                            "Watcher.png",
+                                                        ]
+                                                            .filter((imgName) => imgName.toLowerCase().includes(this.state.traitSearch || ""))
+                                                            .map((imgName, index) => (
+                                                                <div key={index} className="text-center mx-2">
+                                                                    <img
+                                                                        src={`/Trait/${imgName}`}
+                                                                        alt={imgName}
+                                                                        width="80"
+                                                                        height="80"
+                                                                        className="border rounded"
+                                                                        onClick={() =>
+                                                                            this.setState({ trait1Img: `/Trait/${imgName}`, trait1ImgName: imgName.replace(".png", ""), showTrait1Options: false })
+                                                                        }
+                                                                        style={{ cursor: "pointer" }}
+                                                                    />
+                                                                    <p style={{ fontSize: "12px" }}>{imgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                                </div>
+                                                            ))}
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/* ตัวเลือก Trait 2 */}
+                                        {this.state.showTrait2Options && (
+                                            <div className="card mt-3">
+                                                <div className="card-body">
+                                                    <Form.Control
+                                                        type="text"
+                                                        placeholder="ค้นหา Trait..."
+                                                        className="mb-2"
+                                                        onChange={(e) => this.setState({ trait2Search: e.target.value.toLowerCase() })}
+                                                    />
+
+                                                    <div className="d-flex flex-wrap">
+                                                        {[
+                                                            "Academy.png",
+                                                            "Ambassador.png",
+                                                            "Ambusher.png",
+                                                            "BloodHunter.png",
+                                                            "Bruiser.png",
+                                                            "Cabal.png",
+                                                            "Challenger.png",
+                                                            "Crime.png",
+                                                            "Experiment.png",
+                                                            "Family.png",
+                                                            "FormSwapper.png",
+                                                            "Hextech.png",
+                                                            "HighRoller.png",
+                                                            "Hoverboard.png",
+                                                            "Infused.png",
+                                                            "Invoker.png",
+                                                            "JunkerKing.png",
+                                                            "MachineHerald.png",
+                                                            "Martialist.png",
+                                                            "MissMageTrait.png",
+                                                            "Pugilist.png",
+                                                            "Rebel.png",
+                                                            "Scrap.png",
+                                                            "Sniper.png",
+                                                            "Sorcerer.png",
+                                                            "Squad.png",
+                                                            "Titan.png",
+                                                            "Warband.png",
+                                                            "Watcher.png",
+                                                        ]
+                                                            .filter((imgName) => imgName.toLowerCase().includes(this.state.trait2Search || ""))
+                                                            .map((imgName, index) => (
+                                                                <div key={index} className="text-center mx-2">
+                                                                    <img
+                                                                        src={`/Trait/${imgName}`}
+                                                                        alt={imgName}
+                                                                        width="80"
+                                                                        height="80"
+                                                                        className="border rounded"
+                                                                        onClick={() =>
+                                                                            this.setState({ trait2Img: `/Trait/${imgName}`, trait2ImgName: imgName.replace(".png", ""), showTrait2Options: false })
+                                                                        }
+                                                                        style={{ cursor: "pointer" }}
+                                                                    />
+                                                                    <p style={{ fontSize: "12px" }}>{imgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                                </div>
+                                                            ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/* ตัวเลือก Trait 3 */}
+                                        {this.state.showTrait3Options && (
+                                            <div className="card mt-3">
+                                                <div className="card-body">
+                                                    <Form.Control
+                                                        type="text"
+                                                        placeholder="ค้นหา Trait..."
+                                                        className="mb-2"
+                                                        onChange={(e) => this.setState({ trait3Search: e.target.value.toLowerCase() })}
+                                                    />
+
+                                                    <div className="d-flex flex-wrap">
+                                                        {[
+                                                            "Academy.png",
+                                                            "Ambassador.png",
+                                                            "Ambusher.png",
+                                                            "BloodHunter.png",
+                                                            "Bruiser.png",
+                                                            "Cabal.png",
+                                                            "Challenger.png",
+                                                            "Crime.png",
+                                                            "Experiment.png",
+                                                            "Family.png",
+                                                            "FormSwapper.png",
+                                                            "Hextech.png",
+                                                            "HighRoller.png",
+                                                            "Hoverboard.png",
+                                                            "Infused.png",
+                                                            "Invoker.png",
+                                                            "JunkerKing.png",
+                                                            "MachineHerald.png",
+                                                            "Martialist.png",
+                                                            "MissMageTrait.png",
+                                                            "Pugilist.png",
+                                                            "Rebel.png",
+                                                            "Scrap.png",
+                                                            "Sniper.png",
+                                                            "Sorcerer.png",
+                                                            "Squad.png",
+                                                            "Titan.png",
+                                                            "Warband.png",
+                                                            "Watcher.png",
+                                                        ]
+                                                            .filter((imgName) => imgName.toLowerCase().includes(this.state.trait3Search || ""))
+                                                            .map((imgName, index) => (
+                                                                <div key={index} className="text-center mx-2">
+                                                                    <img
+                                                                        src={`/Trait/${imgName}`}
+                                                                        alt={imgName}
+                                                                        width="80"
+                                                                        height="80"
+                                                                        className="border rounded"
+                                                                        onClick={() =>
+                                                                            this.setState({ trait3Img: `/Trait/${imgName}`, trait3ImgName: imgName.replace(".png", ""), showTrait3Options: false })
+                                                                        }
+                                                                        style={{ cursor: "pointer" }}
+                                                                    />
+                                                                    <p style={{ fontSize: "12px" }}>{imgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                                </div>
+                                                            ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/* ตัวเลือก Trait 4 */}
+                                        {this.state.showTrait4Options && (
+                                            <div className="card mt-3">
+                                                <div className="card-body">
+                                                    <Form.Control
+                                                        type="text"
+                                                        placeholder="ค้นหา Trait..."
+                                                        className="mb-2"
+                                                        onChange={(e) => this.setState({ trait4Search: e.target.value.toLowerCase() })}
+                                                    />
+
+                                                    <div className="d-flex flex-wrap">
+                                                        {[
+                                                            "Academy.png",
+                                                            "Ambassador.png",
+                                                            "Ambusher.png",
+                                                            "BloodHunter.png",
+                                                            "Bruiser.png",
+                                                            "Cabal.png",
+                                                            "Challenger.png",
+                                                            "Crime.png",
+                                                            "Experiment.png",
+                                                            "Family.png",
+                                                            "FormSwapper.png",
+                                                            "Hextech.png",
+                                                            "HighRoller.png",
+                                                            "Hoverboard.png",
+                                                            "Infused.png",
+                                                            "Invoker.png",
+                                                            "JunkerKing.png",
+                                                            "MachineHerald.png",
+                                                            "Martialist.png",
+                                                            "MissMageTrait.png",
+                                                            "Pugilist.png",
+                                                            "Rebel.png",
+                                                            "Scrap.png",
+                                                            "Sniper.png",
+                                                            "Sorcerer.png",
+                                                            "Squad.png",
+                                                            "Titan.png",
+                                                            "Warband.png",
+                                                            "Watcher.png",
+                                                        ]
+                                                            .filter((imgName) => imgName.toLowerCase().includes(this.state.trait4Search || ""))
+                                                            .map((imgName, index) => (
+                                                                <div key={index} className="text-center mx-2">
+                                                                    <img
+                                                                        src={`/Trait/${imgName}`}
+                                                                        alt={imgName}
+                                                                        width="80"
+                                                                        height="80"
+                                                                        className="border rounded"
+                                                                        onClick={() =>
+                                                                            this.setState({ trait4Img: `/Trait/${imgName}`, trait4ImgName: imgName.replace(".png", ""), showTrait4Options: false })
+                                                                        }
+                                                                        style={{ cursor: "pointer" }}
+                                                                    />
+                                                                    <p style={{ fontSize: "12px" }}>{imgName.replace(".png", "")}</p> {/* ตัด .png ออก */}
+                                                                </div>
+                                                            ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </Form.Group>
 
                                     <Button variant="primary" type="submit" className="mt-3">
