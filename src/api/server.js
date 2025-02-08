@@ -71,10 +71,10 @@ export default class Service {
         Authorization: `Bearer ${token}`,
       },
     };
-  
+
     const formData = new URLSearchParams();
     formData.append("patch", patch);
-  
+
     try {
       const response = await axios.post(`${BASE_URL}/addPatch`, formData, config);
       return response.data;
@@ -83,7 +83,7 @@ export default class Service {
       throw error;
     }
   };
-  Addcharacters = async (token, base64Image,characterName) => {
+  Addcharacters = async (token, characterName,base64Image, distance, price,traits) => {
     const config = {
       headers: {
         Accept: "application/json",
@@ -91,21 +91,24 @@ export default class Service {
         Authorization: `Bearer ${token}`,
       },
     };
-  
-    const formData = new URLSearchParams();
-    formData.append("base64Image", base64Image);
-    formData.append("characterName", characterName);
 
+    const formData = new URLSearchParams();
+    formData.append("characterName", characterName);
+    formData.append("base64Image", base64Image);
+    formData.append("distance", distance);
+    formData.append("price", price);
+    formData.append("traits", JSON.stringify(traits)); 
     try {
       const response = await axios.post(`${BASE_URL}/Addcharacters`, formData, config);
       return response.data;
     } catch (error) {
-      console.error("Error in Addcharacters:", error);
+      console.error("❌ Error in Addcharacters:", error);
       throw error;
     }
   };
-  
-  
+
+
+
   GetPatch = async () => {
     const config = {
       headers: {
