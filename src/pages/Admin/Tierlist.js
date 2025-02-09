@@ -14,13 +14,14 @@ export default class Tierlist extends Component {
       patch: "",
       activeTabS: 1,
       activeTabA: 1,
+      activeTabMiddle: 5,
       isContentVisibleS: true,
       isContentVisibleA: true,
       showModal: false,
       characterName: "",
-      grid: Array(3)
-        .fill(null)
-        .map(() => Array(7).fill(null)), // 3x3 grid
+      gridhead: [Array(3).fill(null)], // เริ่มต้นด้วย 1 แถว
+      gridTab5: Array(3).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 5
+      gridTab6: Array(3).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 6
       draggedImage: null,
       isDragging: false,
       isDraggingFromGrid: false,
@@ -107,7 +108,9 @@ export default class Tierlist extends Component {
   changeTabA = (tabNumber) => {
     this.setState({ activeTabA: tabNumber });
   };
-
+  changeTabMiddle = (tabNumber) => {
+    this.setState({ activeTabMiddle: tabNumber });
+  };
   handleModalShow = () => {
     this.setState({ showModal: true });
   };
@@ -156,24 +159,68 @@ export default class Tierlist extends Component {
   };
 
   handleDragEnd = () => {
-    this.setState({ isDragging: false });
+    const { draggedFrom, draggedImage } = this.state;
+
+    if (draggedFrom && draggedImage) {
+      let gridKey = this.state.activeTabMiddle === 5 ? "gridTab5" : "gridTab6";
+      if (draggedFrom.row < this.state.gridhead.length) {
+        gridKey = "gridhead"; // ถ้าอยู่ใน gridhead ให้ใช้ gridhead
+      }
+
+      this.setState((prevState) => {
+        const newGrid = prevState[gridKey].map((r) => [...r]);
+        newGrid[draggedFrom.row][draggedFrom.col] = null; // ลบรูปออก
+
+        return {
+          [gridKey]: newGrid,
+          draggedImage: null,
+          draggedFrom: null,
+          isDragging: false,
+        };
+      });
+    } else {
+      this.setState({ isDragging: false });
+    }
   };
-  handleDrop = (row, col) => {
-    const { grid, draggedImage, draggedFrom } = this.state;
+
+
+  handleDrop = (row, col, tabNumber, isHead = false) => {
+    const gridKey = isHead ? "gridhead" : tabNumber === 5 ? "gridTab5" : "gridTab6";
+    const { draggedImage, draggedFrom } = this.state;
+
     if (!draggedImage) return;
 
-    const newGrid = [...grid.map((r) => [...r])]; // Clone grid
+    this.setState((prevState) => {
+      let newGrid = prevState[gridKey].map((r) => [...r]);
 
-    // ล้างตำแหน่งเก่า (ถ้าเป็นการย้ายภายในตาราง)
-    if (draggedFrom) {
-      newGrid[draggedFrom.row][draggedFrom.col] = null;
-    }
+      // ล้างตำแหน่งเก่าถ้ามี
+      if (draggedFrom) {
+        newGrid[draggedFrom.row][draggedFrom.col] = null;
+      }
 
-    // วางรูปในตำแหน่งใหม่
-    newGrid[row][col] = draggedImage;
+      // วางรูปลงตำแหน่งใหม่
+      newGrid[row][col] = draggedImage;
 
-    this.setState({ grid: newGrid, draggedImage: null, draggedFrom: null });
+      // ✅ ถ้าทุกแถวมีจำนวนคอลัมน์เท่ากัน และช่องสุดท้ายมีรูป → เพิ่มคอลัมน์ใหม่
+      if (isHead) {
+        const lastColIndex = newGrid[0].length - 1;
+        const isLastColFull = newGrid.every((row) => row[lastColIndex] !== null);
+
+        if (isLastColFull) {
+          newGrid = newGrid.map((row) => [...row, null]); // เพิ่มคอลัมน์ใหม่
+        }
+      }
+
+      return {
+        [gridKey]: newGrid,
+        draggedImage: null,
+        draggedFrom: null,
+        isDragging: false,
+      };
+    });
   };
+
+
 
 
   handleDragOver = (e) => {
@@ -184,18 +231,34 @@ export default class Tierlist extends Component {
     alert(`คลิกขวาที่ช่อง: แถว ${row + 1}, คอลัมน์ ${col + 1}`);
   };
   handleDeleteDrop = () => {
-    const { grid, draggedFrom } = this.state;
+    const { activeTabMiddle, draggedFrom } = this.state;
+
     if (!draggedFrom) return;
 
-    const newGrid = [...grid.map((r) => [...r])]; // Clone grid
-    newGrid[draggedFrom.row][draggedFrom.col] = null; // ลบรูปในตำแหน่งที่ลากออกมา
+    // ตรวจสอบว่าอยู่ใน gridhead หรือ grid ปกติ
+    let gridKey = activeTabMiddle === 5 ? "gridTab5" : "gridTab6";
+    if (draggedFrom.row < this.state.gridhead.length) {
+      gridKey = "gridhead"; // ถ้าอยู่ใน gridhead ให้ใช้ gridhead
+    }
 
-    this.setState({ grid: newGrid, draggedImage: null, draggedFrom: null });
+    this.setState((prevState) => {
+      const newGrid = prevState[gridKey].map((r) => [...r]);
+      newGrid[draggedFrom.row][draggedFrom.col] = null; // ลบรูปออก
+
+      return {
+        [gridKey]: newGrid,
+        draggedImage: null,
+        draggedFrom: null,
+        isDragging: false,
+      };
+    });
   };
 
 
+
+
   render() {
-    const { token, activeTabS, activeTabA, isContentVisibleS, isContentVisibleA, grid } = this.state;
+    const { token, activeTabS, activeTabA, isContentVisibleS, isContentVisibleA, grid, activeTabMiddle } = this.state;
 
     if (!token) {
       return <Navigate to="/admin" />;
@@ -487,11 +550,36 @@ export default class Tierlist extends Component {
                                     <div className="col-12">
                                       <div className="card shadow-sm text-center">
                                         <div className="card-body">
+                                          <div className="hex-grid p-3">
+                                            {this.state.gridhead.map((row, rowIndex) => (
+                                              <div key={rowIndex} className="hex-row">
+                                                {row.map((cell, colIndex) => (
+                                                  <div
+                                                    key={`${rowIndex}-${colIndex}`}
+                                                    className={`hex-cell ${this.state.isDragging}`}
+                                                    onDragOver={this.handleDragOver}
+                                                    onDrop={() => this.handleDrop(rowIndex, colIndex, null, true)}
+                                                    onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
+                                                    onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
+                                                    draggable={!!cell}
+                                                    onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
+                                                    style={{
+                                                      background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                                    }}
+                                                  >
+                                                    {!cell && <span>Drop Here</span>}
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            ))}
+                                          </div>
+
 
                                         </div>
                                       </div>
-                                    </div>  
+                                    </div>
                                   </div>
+
                                   <div className="row mt-3">
                                     {/* Card 1 (ซ้าย) */}
                                     <div className="col-3">
@@ -504,10 +592,17 @@ export default class Tierlist extends Component {
                                               {this.state.dataX.map((character, index) => (
                                                 <img
                                                   key={index}
-                                                  src={`data:image/png;base64,${character.img}`}
+                                                  src={character.img.startsWith("data:image/png;base64,") ? character.img : `data:image/png;base64,${character.img}`}
                                                   alt={character.name}
                                                   draggable
-                                                  onDragStart={() => this.handleDragStart(`data:image/png;base64,${character.img}`, null, null, false)}
+                                                  onDragStart={() => this.handleDragStart(
+                                                    character.img.startsWith("data:image/png;base64,")
+                                                      ? character.img
+                                                      : `data:image/png;base64,${character.img}`,
+                                                    null,
+                                                    null,
+                                                    false
+                                                  )}
                                                   style={{
                                                     width: "80px",
                                                     height: "80px",
@@ -529,31 +624,70 @@ export default class Tierlist extends Component {
                                     <div className="col-6">
                                       <div className="card shadow-sm text-center">
                                         <div className="card-body">
-                                          <div className="hex-grid p-3">
-                                            {this.state.grid.map((row, rowIndex) => (
-                                              <div key={rowIndex} className="hex-row">
-                                                {row.map((cell, colIndex) => (
-                                                  <div
-                                                    key={`${rowIndex}-${colIndex}`}
-                                                    className={`hex-cell ${this.state.isDragging}`}
-                                                    onDragOver={this.handleDragOver}
-                                                    onDrop={() => this.handleDrop(rowIndex, colIndex)}
-                                                    onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
-                                                    onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
-                                                    draggable={!!cell}
-                                                    onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
-                                                    style={{
-                                                      background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
-                                                    }}
-                                                  >
-                                                    {!cell && <span>Drop Here</span>}
-                                                  </div>
-
-
-
-                                                ))}
+                                          <div className="tabs" style={{ marginBottom: "20px" }}>
+                                            {[5, 6, 7, 8, 9].map((tab) => (
+                                              <div
+                                                key={tab}
+                                                className={`tab ${activeTabMiddle === tab ? "active" : ""}`}
+                                                onClick={() => this.changeTabMiddle(tab)}
+                                              >
+                                                Tab {tab}
                                               </div>
                                             ))}
+                                          </div>
+                                          <div className="hex-grid p-3">
+                                            {activeTabMiddle === 5 &&
+                                              this.state.gridTab5.map((row, rowIndex) => (
+                                                <div key={rowIndex} className="hex-row">
+                                                  {row.map((cell, colIndex) => (
+                                                    <div
+                                                      key={`${rowIndex}-${colIndex}`}
+                                                      className={`hex-cell ${this.state.isDragging}`}
+                                                      onDragOver={this.handleDragOver}
+                                                      onDrop={() => this.handleDrop(rowIndex, colIndex, 5)}
+                                                      onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
+                                                      onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
+                                                      draggable={!!cell}
+                                                      onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
+                                                      style={{
+                                                        background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                                      }}
+                                                    >
+                                                      {!cell && <span>Drop Here</span>}
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              ))
+                                            }
+
+                                            {activeTabMiddle === 6 &&
+                                              this.state.gridTab6.map((row, rowIndex) => (
+                                                <div key={rowIndex} className="hex-row">
+                                                  {row.map((cell, colIndex) => (
+                                                    <div
+                                                      key={`${rowIndex}-${colIndex}`}
+                                                      className={`hex-cell ${this.state.isDragging}`}
+                                                      onDragOver={this.handleDragOver}
+                                                      onDrop={() => this.handleDrop(rowIndex, colIndex, 6)}
+                                                      onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
+                                                      onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
+                                                      draggable={!!cell}
+                                                      onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
+                                                      style={{
+                                                        background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                                      }}
+                                                    >
+                                                      {!cell && <span>Drop Here</span>}
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              ))
+                                            }
+
+                                            {activeTabMiddle === 7 && <p>เนื้อหาของ Tab 7</p>}
+                                            {activeTabMiddle === 8 && <p>เนื้อหาของ Tab 8</p>}
+                                            {activeTabMiddle === 9 && <p>เนื้อหาของ Tab 9</p>}
+
                                           </div>
                                           {this.state.isDragging && this.state.isDraggingFromGrid && (
                                             <div className="card shadow-sm trash-card">
@@ -591,32 +725,10 @@ export default class Tierlist extends Component {
                                   </div>
 
 
-                                  <div className="row mt-3 align-items-center">
 
-                                    {/* <div className="col-6 col-md-3">
-                                      <div className="hex-grid">
-                                        {this.state.grid.map((row, rowIndex) => (
-                                          <div key={rowIndex} className="hex-row">
-                                            {row.map((cell, colIndex) => (
-                                              <div
-                                                key={`${rowIndex}-${colIndex}`}
-                                                className="hex-cell"
-                                                onDragOver={this.handleDragOver}
-                                                onDrop={() => this.handleDrop(rowIndex, colIndex)}
-                                                style={{
-                                                  background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
-                                                }}
-                                              >
-                                                {!cell && <span>Drop Here</span>}
-                                              </div>
-                                            ))}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div> */}
-                                  </div>
-
-
+                                  <button className="btn btn-success mt-3" onClick={this.saveSTierData}>
+                                    บันทึกข้อมูล S Tier
+                                  </button>
                                 </div>
                               )}
 
@@ -630,6 +742,7 @@ export default class Tierlist extends Component {
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
 

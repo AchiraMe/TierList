@@ -526,35 +526,35 @@ export default class Character extends Component {
                                                     <div className="d-flex flex-wrap">
                                                         {[
                                                             "Academy.png",
-                                                            "Ambassador.png",
                                                             "Ambusher.png",
-                                                            "BloodHunter.png",
+                                                            "Artillerist.png",
+                                                            "Autometa.png",
+                                                            "Banished Mage.png",
+                                                            "Black Rose.png",
+                                                            "Blood Hunter.png",
                                                             "Bruiser.png",
-                                                            "Cabal.png",
-                                                            "Challenger.png",
-                                                            "Crime.png",
+                                                            "Chem-Baron.png",
+                                                            "Conqueror.png",
+                                                            "Dominator.png",
+                                                            "Emissary.png",
+                                                            "Enforcer.png",
                                                             "Experiment.png",
                                                             "Family.png",
-                                                            "FormSwapper.png",
-                                                            "Hextech.png",
-                                                            "HighRoller.png",
-                                                            "Hoverboard.png",
-                                                            "Infused.png",
-                                                            "Invoker.png",
-                                                            "JunkerKing.png",
-                                                            "MachineHerald.png",
-                                                            "Martialist.png",
-                                                            "MissMageTrait.png",
-                                                            "Pugilist.png",
+                                                            "Form Swapper.png",
+                                                            "High Roller.png",
+                                                            "Junker King.png",
+                                                            "Machine Herald.png",
+                                                            "Pit Fighter.png",
+                                                            "Quickstriker.png",
                                                             "Rebel.png",
                                                             "Scrap.png",
+                                                            "Sentinel.png",
                                                             "Sniper.png",
                                                             "Sorcerer.png",
-                                                            "Squad.png",
-                                                            "Titan.png",
-                                                            "Warband.png",
-                                                            "Watcher.png",
+                                                            "Visionary.png",
+                                                            "Watcher.png"
                                                         ]
+
                                                             .filter((imgName) => imgName.toLowerCase().includes(this.state.traitSearch || ""))
                                                             .map((imgName, index) => (
                                                                 <div key={index} className="text-center mx-2">
@@ -589,34 +589,33 @@ export default class Character extends Component {
                                                     <div className="d-flex flex-wrap">
                                                         {[
                                                             "Academy.png",
-                                                            "Ambassador.png",
                                                             "Ambusher.png",
-                                                            "BloodHunter.png",
+                                                            "Artillerist.png",
+                                                            "Autometa.png",
+                                                            "Banished Mage.png",
+                                                            "Black Rose.png",
+                                                            "Blood Hunter.png",
                                                             "Bruiser.png",
-                                                            "Cabal.png",
-                                                            "Challenger.png",
-                                                            "Crime.png",
+                                                            "Chem-Baron.png",
+                                                            "Conqueror.png",
+                                                            "Dominator.png",
+                                                            "Emissary.png",
+                                                            "Enforcer.png",
                                                             "Experiment.png",
                                                             "Family.png",
-                                                            "FormSwapper.png",
-                                                            "Hextech.png",
-                                                            "HighRoller.png",
-                                                            "Hoverboard.png",
-                                                            "Infused.png",
-                                                            "Invoker.png",
-                                                            "JunkerKing.png",
-                                                            "MachineHerald.png",
-                                                            "Martialist.png",
-                                                            "MissMageTrait.png",
-                                                            "Pugilist.png",
+                                                            "Form Swapper.png",
+                                                            "High Roller.png",
+                                                            "Junker King.png",
+                                                            "Machine Herald.png",
+                                                            "Pit Fighter.png",
+                                                            "Quickstriker.png",
                                                             "Rebel.png",
                                                             "Scrap.png",
+                                                            "Sentinel.png",
                                                             "Sniper.png",
                                                             "Sorcerer.png",
-                                                            "Squad.png",
-                                                            "Titan.png",
-                                                            "Warband.png",
-                                                            "Watcher.png",
+                                                            "Visionary.png",
+                                                            "Watcher.png"
                                                         ]
                                                             .filter((imgName) => imgName.toLowerCase().includes(this.state.trait2Search || ""))
                                                             .map((imgName, index) => (
@@ -651,34 +650,33 @@ export default class Character extends Component {
                                                     <div className="d-flex flex-wrap">
                                                         {[
                                                             "Academy.png",
-                                                            "Ambassador.png",
                                                             "Ambusher.png",
-                                                            "BloodHunter.png",
+                                                            "Artillerist.png",
+                                                            "Autometa.png",
+                                                            "Banished Mage.png",
+                                                            "Black Rose.png",
+                                                            "Blood Hunter.png",
                                                             "Bruiser.png",
-                                                            "Cabal.png",
-                                                            "Challenger.png",
-                                                            "Crime.png",
+                                                            "Chem-Baron.png",
+                                                            "Conqueror.png",
+                                                            "Dominator.png",
+                                                            "Emissary.png",
+                                                            "Enforcer.png",
                                                             "Experiment.png",
                                                             "Family.png",
-                                                            "FormSwapper.png",
-                                                            "Hextech.png",
-                                                            "HighRoller.png",
-                                                            "Hoverboard.png",
-                                                            "Infused.png",
-                                                            "Invoker.png",
-                                                            "JunkerKing.png",
-                                                            "MachineHerald.png",
-                                                            "Martialist.png",
-                                                            "MissMageTrait.png",
-                                                            "Pugilist.png",
+                                                            "Form Swapper.png",
+                                                            "High Roller.png",
+                                                            "Junker King.png",
+                                                            "Machine Herald.png",
+                                                            "Pit Fighter.png",
+                                                            "Quickstriker.png",
                                                             "Rebel.png",
                                                             "Scrap.png",
+                                                            "Sentinel.png",
                                                             "Sniper.png",
                                                             "Sorcerer.png",
-                                                            "Squad.png",
-                                                            "Titan.png",
-                                                            "Warband.png",
-                                                            "Watcher.png",
+                                                            "Visionary.png",
+                                                            "Watcher.png"
                                                         ]
                                                             .filter((imgName) => imgName.toLowerCase().includes(this.state.trait3Search || ""))
                                                             .map((imgName, index) => (
@@ -713,34 +711,33 @@ export default class Character extends Component {
                                                     <div className="d-flex flex-wrap">
                                                         {[
                                                             "Academy.png",
-                                                            "Ambassador.png",
                                                             "Ambusher.png",
-                                                            "BloodHunter.png",
+                                                            "Artillerist.png",
+                                                            "Autometa.png",
+                                                            "Banished Mage.png",
+                                                            "Black Rose.png",
+                                                            "Blood Hunter.png",
                                                             "Bruiser.png",
-                                                            "Cabal.png",
-                                                            "Challenger.png",
-                                                            "Crime.png",
+                                                            "Chem-Baron.png",
+                                                            "Conqueror.png",
+                                                            "Dominator.png",
+                                                            "Emissary.png",
+                                                            "Enforcer.png",
                                                             "Experiment.png",
                                                             "Family.png",
-                                                            "FormSwapper.png",
-                                                            "Hextech.png",
-                                                            "HighRoller.png",
-                                                            "Hoverboard.png",
-                                                            "Infused.png",
-                                                            "Invoker.png",
-                                                            "JunkerKing.png",
-                                                            "MachineHerald.png",
-                                                            "Martialist.png",
-                                                            "MissMageTrait.png",
-                                                            "Pugilist.png",
+                                                            "Form Swapper.png",
+                                                            "High Roller.png",
+                                                            "Junker King.png",
+                                                            "Machine Herald.png",
+                                                            "Pit Fighter.png",
+                                                            "Quickstriker.png",
                                                             "Rebel.png",
                                                             "Scrap.png",
+                                                            "Sentinel.png",
                                                             "Sniper.png",
                                                             "Sorcerer.png",
-                                                            "Squad.png",
-                                                            "Titan.png",
-                                                            "Warband.png",
-                                                            "Watcher.png",
+                                                            "Visionary.png",
+                                                            "Watcher.png"
                                                         ]
                                                             .filter((imgName) => imgName.toLowerCase().includes(this.state.trait4Search || ""))
                                                             .map((imgName, index) => (
@@ -779,7 +776,7 @@ export default class Character extends Component {
                                             <th className="text-center">Champion</th>
                                             <th className="text-center">Cost</th>
                                             <th className="text-center">Traits</th>
-                                            <th className="text-center">AR</th>
+                                            <th className="text-center">Attack Range</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -797,7 +794,7 @@ export default class Character extends Component {
                                                         <span className="align-items-center">{character.name}</span>
                                                     </td>
 
-                                                    <td className="align-items-center">💰 {character.Price}</td>
+                                                    <td className="text-center">💰 {character.Price}</td>
 
                                                     <td>
                                                         <div className="d-flex flex-column align-items-start">
@@ -853,10 +850,13 @@ export default class Character extends Component {
                                                     </td>
 
                                                     <td>
-                                                        {Array.from({ length: character.Distance }).map((_, i) => (
-                                                            <span key={i} style={{ color: character.Distance <= 2 ? "orange" : "red" }}>▮</span>
+                                                        {Array.from({ length: 5 }).map((_, i) => (
+                                                            <span key={i} style={{ color: i < character.Distance ? (character.Distance <= 2 ? "orange" : "red") : "gray" }}>
+                                                                ▮
+                                                            </span>
                                                         ))}
                                                     </td>
+
 
                                                 </tr>
                                             ))
