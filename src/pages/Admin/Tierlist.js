@@ -20,11 +20,13 @@ export default class Tierlist extends Component {
       showModal: false,
       characterName: "",
       gridhead: [Array(3).fill(null)], // เริ่มต้นด้วย 1 แถว
-      gridTab5: Array(3).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 5
-      gridTab6: Array(3).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 6
+      gridTab5: Array(4).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 5
+      gridTab6: Array(4).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 6
       draggedImage: null,
       isDragging: false,
       isDraggingFromGrid: false,
+      starRatings: {},
+      showTooltip: null,
     };
     this.fileInputRef = React.createRef();
 
@@ -149,96 +151,28 @@ export default class Tierlist extends Component {
     // เรียกใช้ Addcharacters
     this.Addcharacters(base64Image, characterName);
   };
-  handleDragStart = (imgSrc, row = null, col = null, fromGrid = false) => {
+  handleDragStart = (imgSrc, row = null, col = null, fromGrid = false, isHead = false) => {
     this.setState({
       draggedImage: imgSrc,
-      draggedFrom: row !== null ? { row, col } : null,
+      draggedFrom: row !== null ? { row, col, isHead } : null,
       isDragging: true,
-      isDraggingFromGrid: fromGrid // ระบุว่ามาจาก Grid หรือไม่
+      isDraggingFromGrid: fromGrid,
     });
   };
+
+
 
   handleDragEnd = () => {
-    const { draggedFrom, draggedImage } = this.state;
+    const { draggedFrom } = this.state;
 
-    if (draggedFrom && draggedImage) {
-      let gridKey = this.state.activeTabMiddle === 5 ? "gridTab5" : "gridTab6";
-      if (draggedFrom.row < this.state.gridhead.length) {
-        gridKey = "gridhead"; // ถ้าอยู่ใน gridhead ให้ใช้ gridhead
-      }
-
-      this.setState((prevState) => {
-        const newGrid = prevState[gridKey].map((r) => [...r]);
-        newGrid[draggedFrom.row][draggedFrom.col] = null; // ลบรูปออก
-
-        return {
-          [gridKey]: newGrid,
-          draggedImage: null,
-          draggedFrom: null,
-          isDragging: false,
-        };
-      });
-    } else {
+    if (!draggedFrom) {
       this.setState({ isDragging: false });
+      return;
     }
-  };
 
-
-  handleDrop = (row, col, tabNumber, isHead = false) => {
-    const gridKey = isHead ? "gridhead" : tabNumber === 5 ? "gridTab5" : "gridTab6";
-    const { draggedImage, draggedFrom } = this.state;
-
-    if (!draggedImage) return;
-
-    this.setState((prevState) => {
-      let newGrid = prevState[gridKey].map((r) => [...r]);
-
-      // ล้างตำแหน่งเก่าถ้ามี
-      if (draggedFrom) {
-        newGrid[draggedFrom.row][draggedFrom.col] = null;
-      }
-
-      // วางรูปลงตำแหน่งใหม่
-      newGrid[row][col] = draggedImage;
-
-      // ✅ ถ้าทุกแถวมีจำนวนคอลัมน์เท่ากัน และช่องสุดท้ายมีรูป → เพิ่มคอลัมน์ใหม่
-      if (isHead) {
-        const lastColIndex = newGrid[0].length - 1;
-        const isLastColFull = newGrid.every((row) => row[lastColIndex] !== null);
-
-        if (isLastColFull) {
-          newGrid = newGrid.map((row) => [...row, null]); // เพิ่มคอลัมน์ใหม่
-        }
-      }
-
-      return {
-        [gridKey]: newGrid,
-        draggedImage: null,
-        draggedFrom: null,
-        isDragging: false,
-      };
-    });
-  };
-
-
-
-
-  handleDragOver = (e) => {
-    e.preventDefault(); // อนุญาตการวางรูปในพื้นที่นี้
-  };
-  handleRightClick = (event, row, col) => {
-    event.preventDefault(); // ป้องกัน Context Menu ของเบราว์เซอร์
-    alert(`คลิกขวาที่ช่อง: แถว ${row + 1}, คอลัมน์ ${col + 1}`);
-  };
-  handleDeleteDrop = () => {
-    const { activeTabMiddle, draggedFrom } = this.state;
-
-    if (!draggedFrom) return;
-
-    // ตรวจสอบว่าอยู่ใน gridhead หรือ grid ปกติ
-    let gridKey = activeTabMiddle === 5 ? "gridTab5" : "gridTab6";
-    if (draggedFrom.row < this.state.gridhead.length) {
-      gridKey = "gridhead"; // ถ้าอยู่ใน gridhead ให้ใช้ gridhead
+    let gridKey = draggedFrom.isHead ? "gridhead" : "gridTab5";
+    if (!draggedFrom.isHead && this.state.activeTabMiddle === 6) {
+      gridKey = "gridTab6";
     }
 
     this.setState((prevState) => {
@@ -253,6 +187,132 @@ export default class Tierlist extends Component {
       };
     });
   };
+
+
+  handleDrop = (row, col, tabNumber, isHead = false) => {
+    const gridKey = isHead ? "gridhead" : tabNumber === 5 ? "gridTab5" : "gridTab6";
+    const { draggedImage, draggedFrom } = this.state;
+
+    if (!draggedImage) return; // ถ้าไม่มีรูปภาพ ไม่ต้องทำอะไร
+
+    this.setState((prevState) => {
+      let newGrid = prevState[gridKey].map((r) => [...r]);
+
+      // ล้างตำแหน่งเก่าถ้ามาจาก Grid อื่น
+      if (draggedFrom) {
+        const prevGridKey = draggedFrom.isHead ? "gridhead" : draggedFrom.tabNumber === 5 ? "gridTab5" : "gridTab6";
+        let prevGrid = prevState[prevGridKey].map((r) => [...r]);
+        prevGrid[draggedFrom.row][draggedFrom.col] = null;
+        newGrid = prevGrid;
+      }
+
+      // วางรูปลงตำแหน่งใหม่ โดยแน่ใจว่าโครงสร้างข้อมูลถูกต้อง
+      newGrid[row][col] = { img: draggedImage, stars: 0 };
+
+      return {
+        [gridKey]: newGrid,
+        draggedImage: null,
+        draggedFrom: null,
+        isDragging: false,
+      };
+    });
+  };
+
+
+
+
+
+
+  handleDragOver = (e) => {
+    e.preventDefault(); // อนุญาตการวางรูปในพื้นที่นี้
+  };
+  handleRightClick = (event, row, col, tabNumber) => {
+    event.preventDefault(); // ป้องกัน Context Menu ของเบราว์เซอร์
+
+    this.setState({
+      showTooltip: {
+        row,
+        col,
+        tabNumber,
+        x: event.clientX,
+        y: event.clientY
+      }
+    });
+  };
+
+
+  handleSelectStar = (row, col, tabNumber, stars) => {
+    const gridKey = tabNumber === 5 ? "gridTab5" : "gridTab6";
+
+    this.setState((prevState) => {
+      const newGrid = prevState[gridKey].map((r) => [...r]);
+
+      if (newGrid[row][col]) {
+        newGrid[row][col].stars = stars;
+      }
+
+      return {
+        [gridKey]: newGrid,
+        showTooltip: null, // ปิด Tooltip หลังจากเลือก
+      };
+    });
+  };
+  handleRemoveCharacter = (row, col, tabNumber) => {
+    let gridKey = tabNumber === 5 ? "gridTab5" : "gridTab6";
+
+    this.setState((prevState) => {
+      const newGrid = prevState[gridKey].map((r) => [...r]);
+      newGrid[row][col] = null; // ลบทั้งรูปและดาว
+
+      return {
+        [gridKey]: newGrid,
+        showTooltip: null, // ปิด Tooltip หลังจากลบ
+      };
+    });
+  };
+
+
+  handleRemoveStar = (row, col, tabNumber) => {
+    const gridKey = tabNumber === 5 ? "gridTab5" : "gridTab6";
+
+    this.setState((prevState) => {
+      const newGrid = prevState[gridKey].map((r) => [...r]);
+
+      if (newGrid[row][col]) {
+        newGrid[row][col].stars = 0; // ลบดาว
+      }
+
+      return {
+        [gridKey]: newGrid,
+        showTooltip: null, // ปิด Tooltip
+      };
+    });
+  };
+
+  handleDeleteDrop = () => {
+    const { draggedFrom } = this.state;
+
+    if (!draggedFrom) return;
+
+    let gridKey = draggedFrom.isHead ? "gridhead" : "gridTab5";
+    if (!draggedFrom.isHead && this.state.activeTabMiddle === 6) {
+      gridKey = "gridTab6";
+    }
+
+    this.setState((prevState) => {
+      const newGrid = prevState[gridKey].map((r) => [...r]);
+      newGrid[draggedFrom.row][draggedFrom.col] = null; // ลบรูปและดาว
+
+      return {
+        [gridKey]: newGrid,
+        draggedImage: null,
+        draggedFrom: null,
+        isDragging: false,
+      };
+    });
+  };
+
+
 
 
 
@@ -400,6 +460,48 @@ export default class Tierlist extends Component {
   font-size: 14px;
   color: #fff;
 }
+.tooltip-container {
+    position: fixed; /* ทำให้ Tooltip ไม่ถูกจำกัดใน Grid */
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    z-index: 99999; /* ทำให้ Tooltip อยู่ด้านบนสุด */
+    white-space: nowrap;
+    pointer-events: auto; /* ป้องกันการถูกบัง */
+}
+
+.tooltip-container p {
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0;
+    text-align: left;
+}
+
+.tooltip-container p:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.remove-option {
+    color: red;
+}
+
+
+.star-overlay {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* จัดให้อยู่ตรงกลาง */
+    font-size: 18px;
+    color: gold;
+    font-weight: bold;
+    white-space: nowrap; /* ป้องกันข้อความขึ้นบรรทัดใหม่ */
+}
+
+
+
 
 
 
@@ -556,15 +658,13 @@ export default class Tierlist extends Component {
                                                 {row.map((cell, colIndex) => (
                                                   <div
                                                     key={`${rowIndex}-${colIndex}`}
-                                                    className={`hex-cell ${this.state.isDragging}`}
+                                                    className="hex-cell"
                                                     onDragOver={this.handleDragOver}
                                                     onDrop={() => this.handleDrop(rowIndex, colIndex, null, true)}
-                                                    onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
-                                                    onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
                                                     draggable={!!cell}
-                                                    onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
+                                                    onDragStart={() => cell && this.handleDragStart(cell.img, rowIndex, colIndex, true, true)}
                                                     style={{
-                                                      background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
+                                                      background: cell ? `url(${cell.img}) center/cover` : "#f9f9f9",
                                                     }}
                                                   >
                                                     {!cell && <span>Drop Here</span>}
@@ -573,6 +673,7 @@ export default class Tierlist extends Component {
                                               </div>
                                             ))}
                                           </div>
+
 
 
                                         </div>
@@ -639,23 +740,35 @@ export default class Tierlist extends Component {
                                             {activeTabMiddle === 5 &&
                                               this.state.gridTab5.map((row, rowIndex) => (
                                                 <div key={rowIndex} className="hex-row">
-                                                  {row.map((cell, colIndex) => (
-                                                    <div
-                                                      key={`${rowIndex}-${colIndex}`}
-                                                      className={`hex-cell ${this.state.isDragging}`}
-                                                      onDragOver={this.handleDragOver}
-                                                      onDrop={() => this.handleDrop(rowIndex, colIndex, 5)}
-                                                      onDragEnd={() => this.setState({ isDragging: false, isDraggingFromGrid: false })}
-                                                      onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex)}
-                                                      draggable={!!cell}
-                                                      onDragStart={() => cell && this.handleDragStart(cell, rowIndex, colIndex, true)}
-                                                      style={{
-                                                        background: cell ? `url(${cell}) center/cover` : "#f9f9f9",
-                                                      }}
-                                                    >
-                                                      {!cell && <span>Drop Here</span>}
-                                                    </div>
-                                                  ))}
+                                                  {row.map((cell, colIndex) => {
+                                                    const key = `5-${rowIndex}-${colIndex}`;
+                                                    return (
+                                                      <div
+                                                        key={key}
+                                                        className="hex-cell"
+                                                        onDragOver={this.handleDragOver}
+                                                        onDrop={() => this.handleDrop(rowIndex, colIndex, 5)}
+                                                        onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex, 5)}
+                                                        draggable={!!cell}
+                                                        onDragStart={() => cell && this.handleDragStart(cell.img, rowIndex, colIndex, true)}
+                                                        style={{
+                                                          background: cell ? `url(${cell.img}) center/cover` : "#f9f9f9",
+                                                          position: "relative"
+                                                        }}
+                                                      >
+                                                        {/* แสดงดาว */}
+                                                        {cell && cell.stars > 0 && (
+                                                          <div className="star-overlay">
+                                                            {"★".repeat(cell.stars)}
+                                                          </div>
+                                                        )}
+
+                                                        {!cell && <span>Drop Here</span>}
+
+
+                                                      </div>
+                                                    );
+                                                  })}
                                                 </div>
                                               ))
                                             }
@@ -802,6 +915,34 @@ export default class Tierlist extends Component {
           </div>
 
         </div>
+        {/* แสดง Tooltip */}
+        {this.state.showTooltip && (
+          <div
+            className="tooltip-container"
+            style={{
+              position: "fixed",
+              top: `${this.state.showTooltip.y}px`,
+              left: `${this.state.showTooltip.x}px`,
+              transform: "translate(-50%, 10px)",
+              background: "rgba(0, 0, 0, 0.9)",
+              padding: "10px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.5)",
+              zIndex: 9999,
+              color: "white",
+            }}
+          >
+            <p onClick={() => this.handleSelectStar(this.state.showTooltip.row, this.state.showTooltip.col, this.state.showTooltip.tabNumber, 1)}>⭐ 1-Star</p>
+            <p onClick={() => this.handleSelectStar(this.state.showTooltip.row, this.state.showTooltip.col, this.state.showTooltip.tabNumber, 2)}>⭐⭐ 2-Star</p>
+            <p onClick={() => this.handleSelectStar(this.state.showTooltip.row, this.state.showTooltip.col, this.state.showTooltip.tabNumber, 3)}>⭐⭐⭐ 3-Star</p>
+            <p
+              className="remove-option"
+              onClick={() => this.handleRemoveCharacter(this.state.showTooltip.row, this.state.showTooltip.col, this.state.showTooltip.tabNumber)}
+            >
+              ✖ Remove
+            </p>
+          </div>
+        )}
         <Modal show={this.state.showModal} onHide={this.handleModalClose} centered>
           <Modal.Header closeButton>
             <Modal.Title>{this.state.uploadedFile ? "อัปโหลดรูปภาพ" : "เลือกตัวละคร"}</Modal.Title>
