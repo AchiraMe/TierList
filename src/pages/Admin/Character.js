@@ -125,10 +125,17 @@ export default class Character extends Component {
             "/frame/Subtract_1.png",
             "/frame/Subtract_2.png",
             "/frame/Subtract_3.png",
-            "/frame/Subtract_4.png"
+            "/frame/Subtract_4.png",
+            "/frame/Subtract_5.png"
         ];
-        this.setState({ frames: frameList });
+
+        const framePrices = frameList.map((frame, index) => ({ frame, price: index + 1 }));
+        this.setState({
+            frames: framePrices,
+            price: framePrices[0].price // ตั้งค่า price เริ่มต้น
+        });
     };
+
     handleSubmit = (event) => {
         event.preventDefault(); // ป้องกันการรีเฟรชหน้า
         this.Addcharacters();
@@ -360,12 +367,16 @@ export default class Character extends Component {
                                                                 cursor: "pointer",
                                                                 width: "80px",
                                                                 height: "80px",
-                                                                backgroundImage: `url(${frame})`,
+                                                                backgroundImage: `url(${frame.frame})`,
                                                                 backgroundSize: "cover",
-                                                                backgroundPosition: "center",
+                                                                backgroundPosition: "center"
                                                             }}
-                                                            onClick={() => this.setState({ selectedFrame: frame })}
-                                                        ></div>
+                                                            onClick={() => this.setState({
+                                                                selectedFrame: frame.frame,
+                                                                price: frame.price
+                                                            })}
+                                                        />
+
                                                     ))}
                                                 </div>
                                             </div>
@@ -396,6 +407,7 @@ export default class Character extends Component {
                                             type="text"
                                             value={this.state.price}
                                             onChange={(e) => this.setState({ price: e.target.value })}
+                                            disabled
                                         />
                                     </Form.Group>
                                     {/* Trait 1 */}
