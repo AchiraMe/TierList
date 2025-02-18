@@ -135,6 +135,12 @@ export default class Character extends Component {
             price: framePrices[0].price // ตั้งค่า price เริ่มต้น
         });
     };
+    loaditem = () => {
+        const context = require.context("../public/Item", false, /\.(png|jpg|jpeg|gif)$/);
+        const itemList = context.keys().map(context);
+        this.setState({ itemList });
+    };
+
 
     handleSubmit = (event) => {
         event.preventDefault(); // ป้องกันการรีเฟรชหน้า

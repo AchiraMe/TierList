@@ -83,7 +83,7 @@ export default class Service {
       throw error;
     }
   };
-  Addcharacters = async (token, characterName,base64Image, distance, price,traits) => {
+  Addcharacters = async (token, characterName, base64Image, distance, price, traits) => {
     const config = {
       headers: {
         Accept: "application/json",
@@ -97,7 +97,7 @@ export default class Service {
     formData.append("base64Image", base64Image);
     formData.append("distance", distance);
     formData.append("price", price);
-    formData.append("traits", JSON.stringify(traits)); 
+    formData.append("traits", JSON.stringify(traits));
     try {
       const response = await axios.post(`${BASE_URL}/Addcharacters`, formData, config);
       return response.data;
@@ -129,6 +129,17 @@ export default class Service {
     }
   };
 
+  loaditem = async () => {
+    try {
+      const response = await fetch("https://api.lemansturismo.com/api/getitems"); // ดึงไฟล์จาก API
+      const files = await response.json(); // ตัวอย่าง response: ["item1.png", "item2.png"]
+
+      const itemList = files.map(file => `/Item/${file}`); // สร้างพาธของรูปทั้งหมด
+      this.setState({ itemList }); // บันทึกลง state
+    } catch (error) {
+      console.error("Error loading item images:", error);
+    }
+  };
 
 
 
