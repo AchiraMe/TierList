@@ -107,6 +107,28 @@ export default class Service {
     }
   };
 
+  SubmitTierlist = async (token, tierlistData) => {
+    const config = {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      console.log("🔑 Token ที่ใช้ส่งไป API:", token);
+      console.log("📤 กำลังส่งข้อมูลไป API...", JSON.stringify(tierlistData, null, 2));
+
+      const response = await axios.post(`${BASE_URL}/submitTierlist`, tierlistData, config);
+
+      console.log("✅ API Response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error in SubmitTierlist:", error);
+      throw error;
+    }
+  };
 
 
   GetPatch = async () => {
@@ -129,17 +151,6 @@ export default class Service {
     }
   };
 
-  loaditem = async () => {
-    try {
-      const response = await fetch("https://api.lemansturismo.com/api/getitems"); // ดึงไฟล์จาก API
-      const files = await response.json(); // ตัวอย่าง response: ["item1.png", "item2.png"]
-
-      const itemList = files.map(file => `/Item/${file}`); // สร้างพาธของรูปทั้งหมด
-      this.setState({ itemList }); // บันทึกลง state
-    } catch (error) {
-      console.error("Error loading item images:", error);
-    }
-  };
 
 
 

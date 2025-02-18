@@ -19,7 +19,7 @@ export default class Tierlist extends Component {
       isContentVisibleA: true,
       showModal: false,
       characterName: "",
-      gridhead: [Array(3).fill(null)], // เริ่มต้นด้วย 1 แถว
+      gridhead: [Array(1).fill(null)], // เริ่มต้นด้วย 1 แถว
       gridTab5: Array(4).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 5
       gridTab6: Array(4).fill(null).map(() => Array(7).fill(null)), // Grid สำหรับ Tab 6
       draggedImage: null,
@@ -191,22 +191,12 @@ export default class Tierlist extends Component {
 
   handleDrop = (row, col, tabNumber, isHead = false) => {
     const gridKey = isHead ? "gridhead" : tabNumber === 5 ? "gridTab5" : "gridTab6";
-    const { draggedImage, draggedFrom } = this.state;
+    const { draggedImage } = this.state;
 
-    if (!draggedImage) return; // ถ้าไม่มีรูปภาพ ไม่ต้องทำอะไร
+    if (!draggedImage) return;
 
     this.setState((prevState) => {
       let newGrid = prevState[gridKey].map((r) => [...r]);
-
-      // ล้างตำแหน่งเก่าถ้ามาจาก Grid อื่น
-      if (draggedFrom) {
-        const prevGridKey = draggedFrom.isHead ? "gridhead" : draggedFrom.tabNumber === 5 ? "gridTab5" : "gridTab6";
-        let prevGrid = prevState[prevGridKey].map((r) => [...r]);
-        prevGrid[draggedFrom.row][draggedFrom.col] = null;
-        newGrid = prevGrid;
-      }
-
-      // วางรูปลงตำแหน่งใหม่ โดยแน่ใจว่าโครงสร้างข้อมูลถูกต้อง
       newGrid[row][col] = { img: draggedImage, stars: 0 };
 
       return {
@@ -312,8 +302,56 @@ export default class Tierlist extends Component {
     });
   };
 
+  collectTierlistData = () => {
+    const { activeTabS, activeTabA, gridhead, gridTab5, gridTab6 } = this.state;
+
+    const extractData = (grid, gridType) => {
+      return grid.flatMap((row, rowIndex) =>
+        row.map((cell, colIndex) =>
+          cell ? {
+            img: cell.img,
+            stars: cell.stars,
+            grid_type: gridType,
+            row_position: rowIndex,
+            col_position: colIndex
+          } : null
+        ).filter(Boolean)
+      );
+    };
+
+    return {
+      tierS: {
+        activeTab: activeTabS,
+        gridhead: extractData(gridhead, "gridhead"),
+        gridTab5: extractData(gridTab5, "gridTab5"),
+        gridTab6: extractData(gridTab6, "gridTab6"),
+      },
+      tierA: {
+        activeTab: activeTabA,
+      }
+    };
+  };
 
 
+
+
+  SubmitTierlist = async () => {
+
+    const { token } = this.state;
+    const tierlistData = this.collectTierlistData(); // ✅ เรียกจากภายใน Component
+
+    console.log("📤 กำลังส่งข้อมูลไป API...", JSON.stringify(tierlistData, null, 2));
+
+    try {
+      const response = await new Service().SubmitTierlist(token, tierlistData);
+
+      console.log("✅ API Response:", response);
+      alert("บันทึกข้อมูลสำเร็จ!");
+    } catch (error) {
+      console.error("❌ Submit Error:", error);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล!");
+    }
+  };
 
 
 
@@ -802,20 +840,6 @@ export default class Tierlist extends Component {
                                             {activeTabMiddle === 9 && <p>เนื้อหาของ Tab 9</p>}
 
                                           </div>
-                                          {this.state.isDragging && this.state.isDraggingFromGrid && (
-                                            <div className="card shadow-sm trash-card">
-                                              <div className="card-body text-center">
-                                                <div
-                                                  className="trash-zone"
-                                                  onDragOver={this.handleDragOver}
-                                                  onDrop={this.handleDeleteDrop}
-                                                >
-                                                  <i className="fas fa-trash-alt trash-icon"></i>
-                                                  <p className="trash-text">ลากรูปมาวางที่นี่เพื่อลบ</p>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          )}
 
 
 
@@ -839,9 +863,10 @@ export default class Tierlist extends Component {
 
 
 
-                                  <button className="btn btn-success mt-3" onClick={this.saveSTierData}>
-                                    บันทึกข้อมูล S Tier
+                                  <button className="btn btn-primary mt-3" onClick={this.SubmitTierlist}>
+                                    ส่งข้อมูล Tierlist
                                   </button>
+
                                 </div>
                               )}
 
