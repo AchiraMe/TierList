@@ -151,14 +151,15 @@ export default class Tierlist extends Component {
     // เรียกใช้ Addcharacters
     this.Addcharacters(base64Image, characterName);
   };
-  handleDragStart = (imgSrc, row = null, col = null, fromGrid = false, isHead = false) => {
+  handleDragStart = (imgSrc, row, col, tabNumber) => {
     this.setState({
       draggedImage: imgSrc,
-      draggedFrom: row !== null ? { row, col, isHead } : null,
+      draggedFrom: row !== null && col !== null ? { row, col, tabNumber } : null, // แค่บันทึกตำแหน่งถ้าลากจาก Grid
       isDragging: true,
-      isDraggingFromGrid: fromGrid,
+      isDraggingFromGrid: row !== null && col !== null,
     });
   };
+
 
 
 
@@ -189,15 +190,42 @@ export default class Tierlist extends Component {
   };
 
 
-  handleDrop = (row, col, tabNumber, isHead = false) => {
-    const gridKey = isHead ? "gridhead" : tabNumber === 5 ? "gridTab5" : "gridTab6";
-    const { draggedImage } = this.state;
-
+  handleDrop = (row, col, tabNumber) => {
+    const { draggedImage, draggedFrom } = this.state;
     if (!draggedImage) return;
 
+    const gridKey = tabNumber === 5 ? "gridTab5" : "gridTab6";
+
     this.setState((prevState) => {
+      if (!prevState[gridKey] || !Array.isArray(prevState[gridKey])) {
+        console.error(`Error: Grid '${gridKey}' is not initialized properly.`);
+        return {};
+      }
+
       let newGrid = prevState[gridKey].map((r) => [...r]);
-      newGrid[row][col] = { img: draggedImage, stars: 0 };
+
+      // ถ้าลากมาจากตำแหน่งอื่นใน Grid เดียวกัน ให้ลบตำแหน่งเก่า
+      if (draggedFrom) {
+        const prevGridKey = draggedFrom.tabNumber === 5 ? "gridTab5" : "gridTab6";
+
+        if (prevState[prevGridKey] && Array.isArray(prevState[prevGridKey])) {
+          let prevGrid = prevState[prevGridKey].map((r) => [...r]);
+
+          if (prevGrid[draggedFrom.row] && prevGrid[draggedFrom.row][draggedFrom.col] !== undefined) {
+            prevGrid[draggedFrom.row][draggedFrom.col] = null;
+          }
+
+          newGrid = prevGrid;
+        }
+      }
+
+      // **เก็บค่าของรูปที่มีอยู่เดิม (ถ้ามี)**
+      const existingImage = newGrid[row][col] ? newGrid[row][col].img : null;
+
+      // วางรูปที่ตำแหน่งใหม่ (ถ้ายังไม่มีรูป)
+      if (!existingImage) {
+        newGrid[row][col] = { img: draggedImage, stars: 0 };
+      }
 
       return {
         [gridKey]: newGrid,
@@ -207,8 +235,6 @@ export default class Tierlist extends Component {
       };
     });
   };
-
-
 
 
 
@@ -786,12 +812,12 @@ export default class Tierlist extends Component {
                                                         className="hex-cell"
                                                         onDragOver={this.handleDragOver}
                                                         onDrop={() => this.handleDrop(rowIndex, colIndex, 5)}
-                                                        onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex, 5)}
                                                         draggable={!!cell}
-                                                        onDragStart={() => cell && this.handleDragStart(cell.img, rowIndex, colIndex, true)}
+                                                        onContextMenu={(e) => this.handleRightClick(e, rowIndex, colIndex, 5)}
+                                                        onDragStart={() => cell && this.handleDragStart(cell.img, rowIndex, colIndex, 5)}
                                                         style={{
                                                           background: cell ? `url(${cell.img}) center/cover` : "#f9f9f9",
-                                                          position: "relative"
+                                                          position: "relative",
                                                         }}
                                                       >
                                                         {/* แสดงดาว */}
@@ -800,16 +826,15 @@ export default class Tierlist extends Component {
                                                             {"★".repeat(cell.stars)}
                                                           </div>
                                                         )}
-
                                                         {!cell && <span>Drop Here</span>}
-
-
                                                       </div>
                                                     );
                                                   })}
                                                 </div>
                                               ))
                                             }
+
+
 
                                             {activeTabMiddle === 6 &&
                                               this.state.gridTab6.map((row, rowIndex) => (
